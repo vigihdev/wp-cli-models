@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Vigihdev\WpCliModels\DTO\Args\Menu;
+namespace Vigihdev\WpCliModels\DTOs\Args\Menu;
 
 use Vigihdev\WpCliModels\Contracts\Args\Menu\CustomItemMenuArgsInterface;
 

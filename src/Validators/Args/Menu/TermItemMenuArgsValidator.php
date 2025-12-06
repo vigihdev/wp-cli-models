@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Vigihdev\WpCliModels\Validators\Args\Menu;
 
 use Vigihdev\WpCliModels\Contracts\Validators\ArgsValidatorInterface;
-use Vigihdev\WpCliModels\DTO\Args\Menu\TermItemMenuArgsDto;
+use Vigihdev\WpCliModels\DTOs\Args\Menu\TermItemMenuArgsDto;
 use Vigihdev\WpCliModels\Exceptions\ValidationException;
 
 /**
