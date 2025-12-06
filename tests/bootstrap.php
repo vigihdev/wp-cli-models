@@ -28,6 +28,6 @@ require $fileCliAutoLoad;
 // Dotenv 
 $dotEnv = new Dotenv();
 $dotEnv->usePutenv(true);
-$dotEnv->load(
-    Path::join(__DIR__, '..', '.env.testing')
-);
+// $dotEnv->load(
+//     Path::join(__DIR__, '..', '.env.testing')
+// );

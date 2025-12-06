@@ -1,6 +1,6 @@
 <?php
 
-namespace Vigihdev\WpCliMake\Tests;
+namespace Vigihdev\WpCliModels\Tests;
 
 abstract class TestCase extends \PHPUnit\Framework\TestCase
 {
