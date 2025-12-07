@@ -14,3 +14,4 @@ dev.php
 .phpunit.cache/
 coverage/
 data/
+source/
