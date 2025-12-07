@@ -5,13 +5,14 @@ declare(strict_types=1);
 namespace Vigihdev\WpCliModels\DTOs\Args\Menu;
 
 use Vigihdev\WpCliModels\Contracts\Args\Menu\TermItemMenuArgsInterface;
+use Vigihdev\WpCliModels\DTOs\Args\BaseArgsDto;
 
 /**
  * Class TermItemMenuArgsDto
  *
  * DTO untuk menyimpan dan mengakses data perintah penambahan term item menu di WP-CLI
  */
-final class TermItemMenuArgsDto implements TermItemMenuArgsInterface
+final class TermItemMenuArgsDto extends BaseArgsDto implements TermItemMenuArgsInterface
 {
     /**
      * Membuat instance objek TermItemMenuArgsDto dengan parameter yang ditentukan
@@ -150,5 +151,77 @@ final class TermItemMenuArgsDto implements TermItemMenuArgsInterface
     public function getParentId(): ?int
     {
         return $this->parentId;
+    }
+
+    /**
+     * Membuat instance objek TermItemMenuArgsDto dari array data menggunakan named arguments
+     *
+     * @param array $data Array data yang berisi informasi menu item
+     * @return static Instance objek TermItemMenuArgsDto baru
+     * @throws InvalidArgumentException Jika data yang diberikan tidak valid
+     */
+    public static function fromArray(array $data): static
+    {
+        // Validasi required fields
+        if (empty($data['menu'])) {
+            throw new \InvalidArgumentException('Menu identifier is required');
+        }
+
+        if (empty($data['taxonomy'])) {
+            throw new \InvalidArgumentException('Taxonomy is required');
+        }
+
+        if (!isset($data['term_id']) || !is_numeric($data['term_id'])) {
+            throw new \InvalidArgumentException('Valid term ID is required');
+        }
+
+        // Validasi tipe data untuk field numerik
+        if (isset($data['position']) && !is_numeric($data['position'])) {
+            throw new \InvalidArgumentException('Position must be a number');
+        }
+
+        if (isset($data['parent_id']) && !is_numeric($data['parent_id'])) {
+            throw new \InvalidArgumentException('Parent ID must be a number');
+        }
+
+        return new static(
+            menu: $data['menu'],
+            taxonomy: $data['taxonomy'],
+            termId: (int) $data['term_id'],
+            title: $data['title'] ?? null,
+            link: $data['link'] ?? null,
+            description: $data['description'] ?? null,
+            attrTitle: $data['attr_title'] ?? null,
+            target: $data['target'] ?? null,
+            classes: $data['classes'] ?? null,
+            position: isset($data['position']) ? (int) $data['position'] : null,
+            parentId: isset($data['parent_id']) ? (int) $data['parent_id'] : null
+        );
+    }
+
+    /**
+     * Mengkonversi objek ke array asosiatif yang sesuai dengan argumen WP-CLI
+     *
+     * @return array Argumen dalam bentuk array asosiatif
+     */
+    public function toArray(): array
+    {
+        $args = [
+            'title'       => $this->title,
+            'link'        => $this->link,
+            'description' => $this->description,
+            'attr-title'  => $this->attrTitle,
+            'target'      => $this->target,
+            'classes'     => $this->classes,
+            'position'    => $this->position,
+            'parent-id'   => $this->parentId,
+        ];
+
+        // Hapus nilai null agar tidak mempengaruhi command
+        $args = array_filter($args, function ($value) {
+            return $value !== null;
+        });
+
+        return $args;
     }
 }

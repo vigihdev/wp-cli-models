@@ -5,13 +5,14 @@ declare(strict_types=1);
 namespace Vigihdev\WpCliModels\DTOs\Args\Menu;
 
 use Vigihdev\WpCliModels\Contracts\Args\Menu\PostItemMenuArgsInterface;
+use Vigihdev\WpCliModels\DTOs\Args\BaseArgsDto;
 
 /**
  * Class PostItemMenuArgsDto
  *
  * DTO untuk menyimpan dan mengakses data perintah penambahan post item menu di WP-CLI
  */
-final class PostItemMenuArgsDto implements PostItemMenuArgsInterface
+final class PostItemMenuArgsDto extends BaseArgsDto implements PostItemMenuArgsInterface
 {
     /**
      * Membuat instance objek PostItemMenuArgsDto dengan parameter yang ditentukan
@@ -150,5 +151,74 @@ final class PostItemMenuArgsDto implements PostItemMenuArgsInterface
     public function getPorcelain(): bool
     {
         return $this->porcelain;
+    }
+
+    /**
+     * Membuat instance objek PostItemMenuArgsDto dari array data menggunakan named arguments
+     *
+     * @param array $data Array data yang berisi informasi menu item
+     * @return static Instance objek PostItemMenuArgsDto baru
+     * @throws InvalidArgumentException Jika data yang diberikan tidak valid
+     */
+    public static function fromArray(array $data): static
+    {
+        // Validasi required fields
+        if (empty($data['menu'])) {
+            throw new \InvalidArgumentException('Menu identifier is required');
+        }
+
+        if (!isset($data['post_id']) || !is_numeric($data['post_id'])) {
+            throw new \InvalidArgumentException('Valid post ID is required');
+        }
+
+        // Validasi tipe data untuk field numerik
+        if (isset($data['position']) && !is_numeric($data['position'])) {
+            throw new \InvalidArgumentException('Position must be a number');
+        }
+
+        if (isset($data['parent_id']) && !is_numeric($data['parent_id'])) {
+            throw new \InvalidArgumentException('Parent ID must be a number');
+        }
+
+        return new static(
+            menu: $data['menu'],
+            postId: (int) $data['post_id'],
+            title: $data['title'] ?? null,
+            link: $data['link'] ?? null,
+            description: $data['description'] ?? null,
+            attrTitle: $data['attr_title'] ?? null,
+            target: $data['target'] ?? null,
+            classes: $data['classes'] ?? null,
+            position: isset($data['position']) ? (int) $data['position'] : null,
+            parentId: isset($data['parent_id']) ? (int) $data['parent_id'] : null,
+            porcelain: $data['porcelain'] ?? false
+        );
+    }
+
+    /**
+     * Mengkonversi objek ke array asosiatif yang sesuai dengan argumen WP-CLI
+     *
+     * @return array Argumen dalam bentuk array asosiatif
+     */
+    public function toArray(): array
+    {
+        $args = [
+            'title'       => $this->title,
+            'link'        => $this->link,
+            'description' => $this->description,
+            'attr-title'  => $this->attrTitle,
+            'target'      => $this->target,
+            'classes'     => $this->classes,
+            'position'    => $this->position,
+            'parent-id'   => $this->parentId,
+            'porcelain'   => $this->porcelain,
+        ];
+
+        // Hapus nilai null agar tidak mempengaruhi command
+        $args = array_filter($args, function ($value) {
+            return $value !== null;
+        });
+
+        return $args;
     }
 }

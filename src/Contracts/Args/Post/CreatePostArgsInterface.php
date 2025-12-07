@@ -102,12 +102,6 @@ interface CreatePostArgsInterface
      */
     public function getName(): ?string;
 
-    /**
-     * Mendapatkan ID post sumber untuk duplikasi
-     *
-     * @return int|null ID post sumber
-     */
-    public function getFromPost(): ?int;
 
     /**
      * Mendapatkan daftar URL yang akan diping

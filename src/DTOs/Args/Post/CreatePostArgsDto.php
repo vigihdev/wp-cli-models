@@ -32,7 +32,6 @@ final class CreatePostArgsDto extends BaseArgsDto implements CreatePostArgsInter
      * @param string|null $pingStatus Status ping post
      * @param string|null $password Password post
      * @param string|null $name Nama post (slug)
-     * @param int|null $fromPost ID post sumber
      * @param string|null $toPing Daftar URL untuk diping
      * @param string|null $pinged Daftar URL yang sudah diping
      * @param string|null $modified Tanggal modifikasi post
@@ -60,7 +59,6 @@ final class CreatePostArgsDto extends BaseArgsDto implements CreatePostArgsInter
         private readonly ?string $pingStatus = null,
         private readonly ?string $password = null,
         private readonly ?string $name = null,
-        private readonly ?int $fromPost = null,
         private readonly ?string $toPing = null,
         private readonly ?string $pinged = null,
         private readonly ?string $modified = null,
@@ -203,16 +201,6 @@ final class CreatePostArgsDto extends BaseArgsDto implements CreatePostArgsInter
     public function getName(): ?string
     {
         return $this->name;
-    }
-
-    /**
-     * Mendapatkan ID post sumber untuk duplikasi
-     *
-     * @return int|null ID post sumber
-     */
-    public function getFromPost(): ?int
-    {
-        return $this->fromPost;
     }
 
     /**
@@ -364,7 +352,6 @@ final class CreatePostArgsDto extends BaseArgsDto implements CreatePostArgsInter
             pingStatus: $data['pingStatus'] ?? null,
             password: $data['password'] ?? null,
             name: $data['name'] ?? null,
-            fromPost: $data['fromPost'] ?? null,
             toPing: $data['toPing'] ?? null,
             pinged: $data['pinged'] ?? null,
             modified: $data['modified'] ?? null,
