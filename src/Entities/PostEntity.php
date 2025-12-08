@@ -41,8 +41,8 @@ final class PostEntity
     {
         $args = [
             'post_type' => 'any',
-            'post_status' => 'any',
-            'title' => $postTitle,
+            'post_status' => 'publish',
+            'post_title' => $postTitle,
             'posts_per_page' => 1,
         ];
 
@@ -54,9 +54,31 @@ final class PostEntity
 
         // Pastikan judul benar-benar cocok (case sensitive)
         foreach ($posts as $post) {
-            if ($post->post_title === $postTitle) {
+            if (ucwords($post->post_title) === ucwords($postTitle)) {
                 return get_post($post->ID, $output, $filter);
             }
+        }
+
+        return null;
+    }
+
+    public static function findByName(string $postName, string $output = \OBJECT, string $filter = 'raw'): ?WP_Post
+    {
+        $args = [
+            'post_type' => 'any',
+            'post_status' => 'publish',
+            'post_name' => $postName,
+            'posts_per_page' => 1,
+        ];
+
+        $posts = get_posts($args);
+
+        if (empty($posts)) {
+            return null;
+        }
+
+        foreach ($posts as $post) {
+            return get_post($post->ID, $output, $filter);
         }
 
         return null;
@@ -71,7 +93,7 @@ final class PostEntity
     public static function find(array $args = []): array
     {
         $defaults = [
-            'post_type' => 'post',
+            'post_type' => 'any',
             'post_status' => 'publish',
             'posts_per_page' => 10,
         ];

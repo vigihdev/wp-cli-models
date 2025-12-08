@@ -90,7 +90,7 @@ final class TermEntity
      * @param string $term Nama term yang akan dibuat
      * @param string $taxonomy Nama taxonomy tempat membuat term
      * @param array $args Argumen tambahan untuk pembuatan term
-     * @return array|WP_Error Array dengan informasi term dan taxonomy, atau WP_Error jika gagal
+     * @return array{term_id: int, term_taxonomy_id: int|string}|WP_Error Array dengan informasi term dan taxonomy, atau WP_Error jika gagal
      */
     public static function create(string $term, string $taxonomy, array $args = [])
     {

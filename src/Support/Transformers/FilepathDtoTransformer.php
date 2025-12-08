@@ -73,7 +73,14 @@ final class FilepathDtoTransformer
                 throw ContentFetchException::invalidCsv($filepath);
             }
 
-            $data[] = $cols;
+            $header = explode(',', $rows[0]);
+            if (is_int($index) && $index > 0) {
+                $data[] = array_combine($header, $cols);
+            }
+        }
+
+        if (empty($data)) {
+            return $data;
         }
 
         $json = json_encode($data);
