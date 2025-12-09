@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Vigihdev\WpCliModels\UI;
 
+use cli\progress\Bar;
 use cli\Table;
 use WP_CLI;
 
@@ -123,5 +124,202 @@ final class CliStyle
         $table->setRows($items);
 
         $table->display();
+    }
+
+    /**
+     * Tampilkan catatan/note (info dengan format khusus)
+     */
+    public function note(string $message): void
+    {
+        WP_CLI::log("");
+        WP_CLI::log(
+            WP_CLI::colorize("%C[NOTE]%n %w{$message}%n")
+        );
+        WP_CLI::log("");
+    }
+
+    /**
+     * Tampilkan info message
+     */
+    public function info(string $message): void
+    {
+        WP_CLI::log(
+            WP_CLI::colorize("%b[INFO]%n {$message}")
+        );
+    }
+
+    /**
+     * Tampilkan comment/komentar
+     */
+    public function comment(string $message): void
+    {
+        WP_CLI::log(
+            WP_CLI::colorize("%Y[COMMENT]%n %w{$message}%n")
+        );
+    }
+
+    /**
+     * Tampilkan caution/perhatian
+     */
+    public function caution(string $message): void
+    {
+        WP_CLI::log("");
+        WP_CLI::log(
+            WP_CLI::colorize("%Y[CAUTION]%n %R{$message}%n")
+        );
+        WP_CLI::log("");
+    }
+
+    /**
+     * Tampilkan progress bar (simple version)
+     */
+    public function progressBar(int $total, string $format = null): Bar
+    {
+        $format = $format ?? 'Progress: %percent%%';
+        $bar = new Bar($format, $total);
+        return $bar;
+    }
+
+    /**
+     * Buat progress bar instance
+     */
+    public function createProgressBar(int $max = 0): Bar
+    {
+        return new Bar('Progress', $max, 0.1);
+    }
+
+    /**
+     * Tampilkan listing/daftar
+     */
+    public function listing(array $items): void
+    {
+        WP_CLI::log("");
+        foreach ($items as $index => $item) {
+            WP_CLI::log(sprintf("  %d. %s", $index + 1, $item));
+        }
+        WP_CLI::log("");
+    }
+
+    /**
+     * Tampilkan text dengan newline
+     */
+    public function text(string $message): void
+    {
+        WP_CLI::log($message);
+    }
+
+    /**
+     * Tampilkan new line
+     */
+    public function newLine(int $count = 1): void
+    {
+        for ($i = 0; $i < $count; $i++) {
+            WP_CLI::log("");
+        }
+    }
+
+    /**
+     * Tampilkan block text dengan background
+     */
+    public function block(string $message, string $type = 'info', bool $padding = true): void
+    {
+        $colors = [
+            'info' => '%B',
+            'success' => '%G',
+            'warning' => '%Y',
+            'error' => '%R',
+            'note' => '%C',
+        ];
+
+        $color = $colors[$type] ?? '%w';
+
+        if ($padding) {
+            WP_CLI::log("");
+        }
+
+        $lines = explode("\n", $message);
+        foreach ($lines as $line) {
+            WP_CLI::log(
+                WP_CLI::colorize("{$color}  {$line}%n")
+            );
+        }
+
+        if ($padding) {
+            WP_CLI::log("");
+        }
+    }
+
+    /**
+     * Log biasa (alias untuk WP_CLI::log)
+     */
+    public function log(string $message): void
+    {
+        WP_CLI::log($message);
+    }
+
+    /**
+     * Error log tanpa exit
+     */
+    public function errorLog(string $message): void
+    {
+        WP_CLI::error($message, false);
+    }
+
+    /**
+     * Tampilkan key-value pairs
+     */
+    public function definitionList(array $items): void
+    {
+        WP_CLI::log("");
+
+        // Cari key terpanjang untuk alignment
+        $maxLength = 0;
+        foreach (array_keys($items) as $key) {
+            $length = strlen($key);
+            if ($length > $maxLength) {
+                $maxLength = $length;
+            }
+        }
+
+        foreach ($items as $key => $value) {
+            $spaces = str_repeat(' ', $maxLength - strlen($key));
+            WP_CLI::log(
+                WP_CLI::colorize("%G{$key}:%n{$spaces} {$value}")
+            );
+        }
+
+        WP_CLI::log("");
+    }
+
+    /**
+     * Tampilkan horizontal rule
+     */
+    public function hr(string $char = '─', int $length = 50): void
+    {
+        $this->separator($char, $length);
+    }
+
+    /**
+     * Tampilkan success dengan icon
+     */
+    public function successWithIcon(string $message, string $icon = '✅'): void
+    {
+        $this->success("{$icon} {$message}");
+    }
+
+    /**
+     * Tampilkan warning dengan icon
+     */
+    public function warningWithIcon(string $message, string $icon = '⚠️'): void
+    {
+        $this->warning("{$icon} {$message}");
+    }
+
+    /**
+     * Tampilkan error dengan icon
+     */
+    public function errorWithIcon(string $message, string $icon = '❌', bool $exit = true): void
+    {
+        WP_CLI::error("{$icon} {$message}", $exit);
     }
 }
