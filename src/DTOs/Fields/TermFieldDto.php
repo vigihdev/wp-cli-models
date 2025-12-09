@@ -77,7 +77,7 @@ final class TermFieldDto extends BaseFieldDto implements TermFieldInterface
     {
         return array_filter([
             'name' => $this->getName(),
-            'slug' => $this->getSlug(),
+            'slug' => $this->getSlug() ? sanitize_title($this->getSlug()) : sanitize_title($this->getName()),
             'taxonomy' => $this->getTaxonomy(),
             'description' => $this->getDescription(),
         ], function ($value) {
