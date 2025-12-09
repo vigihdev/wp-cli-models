@@ -114,7 +114,10 @@ final class CliStyle
      */
     public function table(array $items, array $fields)
     {
-        $fields = array_map(fn($v) => WP_CLI::colorize("%G{$v}%n"), $fields);
+        $fields = array_map(function ($v) {
+            $v = ucfirst($v);
+            return WP_CLI::colorize("%G{$v}%n");
+        }, $fields);
         $table = new Table();
         $table->setHeaders($fields);
         $table->setRows($items);
