@@ -4,18 +4,25 @@ declare(strict_types=1);
 
 namespace Vigihdev\WpCliModels\UI;
 
+use cli\Table;
 use WP_CLI;
 
 final class CliStyle
 {
 
-    public function title(string $msg): void
+    public function title(string $msg, string $color = '%G'): void
     {
         WP_CLI::log("");
         WP_CLI::log(
-            WP_CLI::colorize("%B{$msg}%n")
+            WP_CLI::colorize("{$color}{$msg}%n")
         );
         WP_CLI::log(str_repeat("=", strlen($msg)));
+        WP_CLI::log("");
+    }
+
+    public function line(string $message): void
+    {
+        WP_CLI::line($message);
     }
 
     public function success(string $msg): void
@@ -40,15 +47,78 @@ final class CliStyle
         );
     }
 
-    public function summary(int $total, int $created, int $skipped, int $failed, float $seconds): void
+    public function summary(...$messages): void
     {
         WP_CLI::log("");
         WP_CLI::log("📊 Summary:");
         WP_CLI::log("──────────────");
-        WP_CLI::log("Total   : {$total}");
-        WP_CLI::log("✅ Created: {$created}");
-        WP_CLI::log("⚠️ Skipped: {$skipped}");
-        WP_CLI::log("❌ Failed : {$failed}");
-        WP_CLI::log("Time    : {$seconds}s");
+        foreach ($messages as $message) {
+            WP_CLI::log("{$message}");
+        }
+        WP_CLI::log("");
+    }
+
+    public function textGreen(string $message, string $color = '%G'): string
+    {
+        return WP_CLI::colorize("{$color}{$message}%n");
+    }
+
+    public function textYellow(string $message, string $color = '%Y'): string
+    {
+        return WP_CLI::colorize("{$color}{$message}%n");
+    }
+
+    public function textMagenta(string $message, string $color = '%P'): string
+    {
+        return WP_CLI::colorize("{$color}{$message}%n");
+    }
+
+    public function textRed(string $message, string $color = '%R'): string
+    {
+        return WP_CLI::colorize("{$color}{$message}%n");
+    }
+    public function textBlue(string $message, string $color = '%b'): string
+    {
+        return WP_CLI::colorize("{$color}{$message}%n");
+    }
+
+    public function textSuccess(string $message): string
+    {
+        return WP_CLI::colorize("%g{$message}%n");
+    }
+
+    public function textError(string $message): string
+    {
+        return WP_CLI::colorize("%r{$message}%n");
+    }
+
+    public function textInfo(string $message): string
+    {
+        return WP_CLI::colorize("%b{$message}%n");
+    }
+    public function textWarning(string $message): string
+    {
+        return WP_CLI::colorize("%y{$message}%n");
+    }
+
+    public function start(string $message)
+    {
+        WP_CLI::line("🚀 {$message}");
+        WP_CLI::log('');
+    }
+
+
+    /**
+     * @param string[] $fields
+     * @param array<int,string[]> $items 
+     */
+    public function table(array $items, array $fields)
+    {
+        $fields = array_map(fn($v) => WP_CLI::colorize("%G{$v}%n"), $fields);
+        $table = new Table();
+        $table->setHeaders($fields);
+        $table->setRows($items);
+
+        $table->display();
     }
 }
