@@ -31,57 +31,72 @@ final class PostEntity
 
     /**
      * Mengambil post berdasarkan judul
+     * Menemukan post berdasarkan title (exact match).
      *
      * @param string $postTitle Judul post yang akan dicari
      * @param string $output Tipe output (OBJECT, ARRAY_A, ARRAY_N)
      * @param string $filter Type filter
+     * @param array $postStatus default 'publish', 'draft', 'pending', 'future', 'private'
      * @return WP_Post|null Instance WP_Post jika post ditemukan, null jika tidak
      */
-    public static function findByTitle(string $postTitle, string $output = \OBJECT, string $filter = 'raw'): ?WP_Post
-    {
-        $args = [
-            'post_type' => 'any',
-            'post_status' => 'publish',
-            'post_title' => $postTitle,
-            'posts_per_page' => 1,
-        ];
+    public static function findByTitle(
+        string $postTitle,
+        string $output = OBJECT,
+        string $filter = 'raw',
+        array $postStatus = ['publish', 'draft', 'pending', 'future', 'private']
+    ): ?WP_Post {
+        global $wpdb;
 
-        $posts = get_posts($args);
+        $placeholders = implode(', ', array_fill(0, count($postStatus), '%s'));
 
-        if (empty($posts)) {
-            return null;
-        }
+        $sql = "
+            SELECT ID 
+            FROM $wpdb->posts 
+            WHERE post_title = %s
+            AND post_status IN ($placeholders)
+            LIMIT 1
+        ";
 
-        // Pastikan judul benar-benar cocok (case sensitive)
-        foreach ($posts as $post) {
-            if (ucwords($post->post_title) === ucwords($postTitle)) {
-                return get_post($post->ID, $output, $filter);
-            }
-        }
+        $params = array_merge([$postTitle], $postStatus);
 
-        return null;
+        $postId = $wpdb->get_var($wpdb->prepare($sql, ...$params));
+
+        return $postId ? get_post($postId, $output, $filter) : null;
     }
 
-    public static function findByName(string $postName, string $output = \OBJECT, string $filter = 'raw'): ?WP_Post
-    {
-        $args = [
-            'post_type' => 'any',
-            'post_status' => 'publish',
-            'post_name' => $postName,
-            'posts_per_page' => 1,
-        ];
+    /**
+     * Mencari post berdasarkan nama slug
+     * Menemukan post berdasarkan post_name (slug) dengan pencocokan persis.
+     *
+     * @param string $postName Nama slug post yang akan dicari
+     * @param string $output Tipe output (OBJECT, ARRAY_A, ARRAY_N)
+     * @param string $filter Jenis filter untuk hasil post
+     * @param array $postStatus Daftar status post yang akan dicari, default publish, draft, pending, future, private
+     * @return WP_Post|null Instance WP_Post jika post ditemukan, null jika tidak ada yang cocok
+     */
+    public static function findByName(
+        string $postName,
+        string $output = OBJECT,
+        string $filter = 'raw',
+        array $postStatus = ['publish', 'draft', 'pending', 'future', 'private']
+    ): ?WP_Post {
+        global $wpdb;
 
-        $posts = get_posts($args);
+        $placeholders = implode(', ', array_fill(0, count($postStatus), '%s'));
 
-        if (empty($posts)) {
-            return null;
-        }
+        $sql = "
+            SELECT ID 
+            FROM $wpdb->posts 
+            WHERE post_name = %s
+            AND post_status IN ($placeholders)
+            LIMIT 1
+        ";
 
-        foreach ($posts as $post) {
-            return get_post($post->ID, $output, $filter);
-        }
+        $params = array_merge([$postName], $postStatus);
 
-        return null;
+        $postId = $wpdb->get_var($wpdb->prepare($sql, ...$params));
+
+        return $postId ? get_post($postId, $output, $filter) : null;
     }
 
     /**
@@ -164,6 +179,23 @@ final class PostEntity
     {
         $post = get_post($postId);
         return ($post && !is_wp_error($post) && $post->post_status !== 'trash');
+    }
+
+    /**
+     * Mengecek apakah title sudah ada (true jika ada).
+     */
+    public static function existsByTitle(string $postTitle): bool
+    {
+        return (bool) self::findByTitle($postTitle);
+    }
+
+
+    /**
+     * Mengecek apakah slug sudah ada (true jika ada).
+     */
+    public static function existsByName(string $postName): bool
+    {
+        return (bool) self::findByName($postName);
     }
 
     /**

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Vigihdev\WpCliModels\Entities;
 
+use Vigihdev\WpCliModels\DTOs\Entities\Terms\TermEntityDto;
 use WP_Term;
 use WP_Error;
 
@@ -14,9 +15,9 @@ final class TermEntity
      *
      * @param int $termId ID term yang akan dicari
      * @param string|null $taxonomy Nama taxonomy tempat mencari term (opsional)
-     * @return WP_Term|null Instance WP_Term jika term ditemukan, null jika tidak
+     * @return TermEntityDto|null Instance WP_Term jika term ditemukan, null jika tidak
      */
-    public static function findById(int $termId, ?string $taxonomy = null): ?WP_Term
+    public static function findById(int $termId, ?string $taxonomy = null): ?TermEntityDto
     {
         $term = get_term($termId, $taxonomy);
 
@@ -24,7 +25,7 @@ final class TermEntity
             return null;
         }
 
-        return $term;
+        return TermEntityDto::fromQuery($term);
     }
 
     /**
