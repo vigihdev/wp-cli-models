@@ -8,52 +8,39 @@ use Vigihdev\WpCliModels\UI\CliStyle;
 
 final class ProcessImportPreset
 {
+    private ImportSummary $summary;
+    private ProgressLog $progressLog;
+
     public function __construct(
         private readonly CliStyle $io,
         private readonly string $filepath,
+        private readonly string|float $startTime,
         private readonly string $name,
         private readonly int $total,
-    ) {}
+    ) {
+        $this->progressLog = new ProgressLog(io: $io, total: $total);
+        $this->summary = new ImportSummary();
+    }
 
     public function renderTitle(): void
     {
         $io = $this->io;
-        $io->title('🔍 DRY RUN - Preview Data Import');
-        $io->note('Tidak ada perubahan ke database');
-    }
+        $io->title('🚀 Memulai Import ' . $this->name);
+        $io->note('Mode: EXECUTE - Data akan dimasukkan ke database');
+        $io->hr();
 
-    public function renderCompact(array $items, array $fields): void
-    {
-        $this->renderTitle();
-        $this->renderTable($items, $fields);
-        $this->renderDefinitionList();
-        $this->renderFooter();
-    }
-
-    public function renderTable(array $items, array $fields): void
-    {
-        $io = $this->io;
-        $io->table($items, $fields);
+        $io->info("📊 Menemukan {$this->total} {$this->name}(s) untuk diimport.");
         $io->newLine();
+        $this->progressLog->start();
     }
 
-    public function renderDefinitionList()
+    public function getSummary(): ImportSummary
     {
-        $io = $this->io;
-        $io->hr('-', 75);
-        $io->definitionList([
-            'Total ' . $this->name => (string) $this->total,
-            'Mode' => 'Dry Run',
-            'File' => basename($this->filepath)
-        ]);
-        $io->hr('-', 75);
-        $io->newLine();
+        return $this->summary;
     }
 
-    public function renderFooter(): void
+    public function getProgressLog(): ProgressLog
     {
-        $io = $this->io;
-        $io->successWithIcon('Dry run selesai!');
-        $io->block('Gunakan tanpa --dry-run untuk eksekusi sebenarnya.', 'note');
+        return $this->progressLog;
     }
 }
