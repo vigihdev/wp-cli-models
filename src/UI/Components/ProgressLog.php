@@ -2,15 +2,17 @@
 
 namespace Vigihdev\WpCliModels\UI\Components;
 
+use Vigihdev\WpCliModels\UI\CliStyle;
 use WP_CLI;
 
 final class ProgressLog
 {
     private int $current = 0;
-    private int $total = 0;
 
-    public function __construct(int $total)
-    {
+    public function __construct(
+        private readonly CliStyle $io,
+        private readonly int $total = 0,
+    ) {
         $this->total = max(1, $total);
     }
 
@@ -54,6 +56,6 @@ final class ProgressLog
      */
     public function error(string $message): void
     {
-        WP_CLI::error($message, false); // false = jangan exit
+        WP_CLI::error($message, false);
     }
 }
