@@ -12,9 +12,7 @@ final class ProgressLog
     public function __construct(
         private readonly CliStyle $io,
         private readonly int $total = 0,
-    ) {
-        $this->total = max(1, $total);
-    }
+    ) {}
 
     /**
      * Tampilkan opening log
