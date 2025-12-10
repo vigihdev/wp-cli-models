@@ -22,7 +22,12 @@ final class ProcessImportPreset
         $this->summary = new ImportSummary();
     }
 
-    public function renderTitle(): void
+    public function getStartTime(): string|float
+    {
+        return $this->startTime;
+    }
+
+    public function startRender(): void
     {
         $io = $this->io;
         $io->title('🚀 Memulai Import ' . $this->name);
