@@ -22,6 +22,14 @@ final class DryRunPresetImport
         $io->note('Tidak ada perubahan ke database');
     }
 
+    public function renderCompact(array $items, array $fields): void
+    {
+        $this->renderTitle();
+        $this->renderTable($items, $fields);
+        $this->renderDefinitionList();
+        $this->renderFooter();
+    }
+
     public function renderTable(array $items, array $fields): void
     {
         $io = $this->io;
@@ -39,6 +47,7 @@ final class DryRunPresetImport
             'File' => basename($this->filepath)
         ]);
         $io->hr('-', 75);
+        $io->newLine();
     }
 
     public function renderFooter(): void
