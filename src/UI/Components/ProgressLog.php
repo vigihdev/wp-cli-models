@@ -15,6 +15,7 @@ final class ProgressLog
         private readonly bool $blockHr = true,
     ) {}
 
+
     /**
      * Tampilkan opening log
      */
