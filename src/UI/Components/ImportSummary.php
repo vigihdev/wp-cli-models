@@ -50,6 +50,7 @@ final class ImportSummary
             ],
             ['Status', 'Count']
         );
+        $io->newLine();
     }
 
     public function renderDefinitionList(CliStyle $io, string $filepath, float $execTime)
@@ -57,12 +58,13 @@ final class ImportSummary
         $total = $this->success + $this->skipped + $this->failed;
         $execTime = number_format($execTime, 2);
 
-        $io->newLine();
+        $io->hr('-', 75);
         $io->definitionList([
             '⏱  Waktu Eksekusi' => "{$execTime} detik",
             '📁 File Source'   => basename($filepath),
             '📄 Total Data'    => (string) $total,
         ]);
+        $io->hr('-', 75);
     }
 
     public function renderFooter(CliStyle $io): void

@@ -12,6 +12,7 @@ final class ProgressLog
     public function __construct(
         private readonly CliStyle $io,
         private readonly int $total = 0,
+        private readonly bool $blockHr = true,
     ) {}
 
     /**
@@ -19,7 +20,17 @@ final class ProgressLog
      */
     public function start(string $message = '⏳ Memproses...'): void
     {
+        if ($this->blockHr) {
+            $this->io->hr('-', 75);
+        }
         WP_CLI::log($message);
+    }
+
+    public function end(): void
+    {
+        if ($this->blockHr) {
+            $this->io->hr('-', 75);
+        }
     }
 
     /**
