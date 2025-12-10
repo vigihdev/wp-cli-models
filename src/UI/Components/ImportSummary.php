@@ -29,9 +29,10 @@ final class ImportSummary
     {
         $total = $this->success + $this->skipped + $this->failed;
 
-        $io->newLine(2);
+        $io->newLine();
         $io->title('📋 SUMMARY IMPORT');
-        $io->hr();
+        $io->newLine();
+        // $io->hr();
 
         $io->table(
             [
@@ -42,25 +43,25 @@ final class ImportSummary
             ['Status', 'Count']
         );
 
-        $execTime = number_format($execTime, 2);
+        // $execTime = number_format($execTime, 2);
 
-        $io->newLine();
-        $io->definitionList([
-            '⏱  Waktu Eksekusi' => "{$execTime} detik",
-            '📁 File Source'   => basename($filepath),
-            '📄 Total Data'    => (string) $total,
-        ]);
+        // $io->newLine();
+        // $io->definitionList([
+        //     '⏱  Waktu Eksekusi' => "{$execTime} detik",
+        //     '📁 File Source'   => basename($filepath),
+        //     '📄 Total Data'    => (string) $total,
+        // ]);
 
-        // Message Footer
-        if ($this->failed === 0 && $this->success > 0) {
-            $io->newLine();
-            $io->block('🎉 Import selesai dengan sukses!', 'success');
-        } elseif ($this->success > 0) {
-            $io->newLine();
-            $io->block("ℹ️ Import selesai dengan {$this->failed} error.", 'warning');
-        } else {
-            $io->newLine();
-            $io->block('ℹ️  Tidak ada data yang diimport.', 'warning');
-        }
+        // // Message Footer
+        // if ($this->failed === 0 && $this->success > 0) {
+        //     $io->newLine();
+        //     $io->block('🎉 Import selesai dengan sukses!', 'success');
+        // } elseif ($this->success > 0) {
+        //     $io->newLine();
+        //     $io->block("ℹ️ Import selesai dengan {$this->failed} error.", 'warning');
+        // } else {
+        //     $io->newLine();
+        //     $io->block('ℹ️  Tidak ada data yang diimport.', 'warning');
+        // }
     }
 }

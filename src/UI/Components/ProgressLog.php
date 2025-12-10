@@ -36,9 +36,9 @@ final class ProgressLog
     /**
      * Log warning dengan style seragam
      */
-    public function warn(string $message): void
+    public function warning(string $message): void
     {
-        WP_CLI::warning("⚠️  " . $message);
+        $this->io->warningWithIcon($message);
     }
 
     /**
@@ -46,7 +46,7 @@ final class ProgressLog
      */
     public function success(string $message): void
     {
-        WP_CLI::success($message);
+        $this->io->successWithIcon($message);
     }
 
     /**
@@ -54,6 +54,6 @@ final class ProgressLog
      */
     public function error(string $message): void
     {
-        WP_CLI::error($message, false);
+        $this->io->errorWithIcon($message);
     }
 }
