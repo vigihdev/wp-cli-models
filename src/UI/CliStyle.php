@@ -304,7 +304,7 @@ final class CliStyle
      */
     public function successWithIcon(string $message, string $icon = '✅'): void
     {
-        $this->success("{$icon} {$message}");
+        WP_CLI::success("{$icon} {$message}");
     }
 
     /**
