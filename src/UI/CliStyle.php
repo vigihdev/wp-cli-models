@@ -312,7 +312,7 @@ final class CliStyle
      */
     public function warningWithIcon(string $message, string $icon = '⚠️'): void
     {
-        $this->warning("{$icon} {$message}");
+        WP_CLI::warning("{$icon}  {$message}");
     }
 
     /**
