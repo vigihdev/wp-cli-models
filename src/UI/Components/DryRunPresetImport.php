@@ -18,7 +18,7 @@ final class DryRunPresetImport
     public function renderTitle(): void
     {
         $io = $this->io;
-        $io->title('🔍 DRY RUN - Preview Data Import');
+        $io->title("🔍 DRY RUN - Preview Data Import {$this->name}");
         $io->note('Tidak ada perubahan ke database');
     }
 
