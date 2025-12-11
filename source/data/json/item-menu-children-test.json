@@ -1,0 +1,44 @@
+[
+    {
+        "type": "custom",
+        "label": "Home",
+        "title": "Homepage",
+        "url": "https://example.com/"
+    },
+    {
+        "type": "custom",
+        "label": "About Us",
+        "title": "Our Story",
+        "url": "https://example.com/about"
+    },
+    {
+        "type": "custom",
+        "label": "Services",
+        "title": "What We Offer",
+        "url": "https://example.com/services"
+    },
+    {
+        "type": "custom",
+        "label": "Portfolio",
+        "title": "Our Works",
+        "url": "https://example.com/portfolio"
+    },
+    {
+        "type": "custom",
+        "label": "Blog",
+        "title": "Latest News",
+        "url": "https://example.com/blog"
+    },
+    {
+        "type": "custom",
+        "label": "Products",
+        "title": "Our Products",
+        "url": "https://example.com/products"
+    },
+    {
+        "type": "custom",
+        "label": "Contact",
+        "title": "Get In Touch",
+        "url": "https://example.com/contact"
+    }
+]
