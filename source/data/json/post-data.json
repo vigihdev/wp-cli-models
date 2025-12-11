@@ -1,0 +1,72 @@
+[
+    {
+        "title": "Contoh Post Pertama",
+        "content": "Ini adalah contoh konten untuk post pertama.",
+        "status": "publish",
+        "type": "post",
+        "author": 1,
+        "taxInput": [
+            {
+                "kota_category": [
+                    "Aceh"
+                ]
+            }
+        ]
+    },
+    {
+        "title": "Contoh Post Kedua",
+        "content": "Ini adalah contoh konten untuk post kedua.",
+        "status": "draft",
+        "type": "post",
+        "author": 1,
+        "taxInput": [
+            {
+                "kota_category": [
+                    "Aceh"
+                ]
+            }
+        ]
+    },
+    {
+        "title": "Contoh Page",
+        "content": "Ini adalah contoh konten untuk halaman.",
+        "status": "publish",
+        "type": "page",
+        "author": 1,
+        "taxInput": [
+            {
+                "kota_category": [
+                    "Aceh"
+                ]
+            }
+        ]
+    },
+    {
+        "title": "Tutorial WordPress",
+        "content": "Panduan lengkap menggunakan WordPress untuk pemula.",
+        "status": "publish",
+        "type": "post",
+        "author": 2,
+        "taxInput": [
+            {
+                "kota_category": [
+                    "Aceh"
+                ]
+            }
+        ]
+    },
+    {
+        "title": "Tentang Kami",
+        "content": "Halaman tentang tim kami dan visi perusahaan.",
+        "status": "publish",
+        "type": "page",
+        "author": 1,
+        "taxInput": [
+            {
+                "kota_category": [
+                    "Aceh"
+                ]
+            }
+        ]
+    }
+]

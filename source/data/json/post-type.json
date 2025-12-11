@@ -1,0 +1,30 @@
+[
+    {
+        "title": "Contoh Post Pertama",
+        "content": "Ini adalah contoh konten untuk post pertama.",
+        "status": "publish",
+        "type": "kota",
+        "author": 1,
+        "taxInput": [
+            {
+                "kota_category": [
+                    6
+                ]
+            }
+        ]
+    },
+    {
+        "title": "Contoh Post Kedua",
+        "content": "Ini adalah contoh konten untuk post kedua.",
+        "status": "publish",
+        "type": "kota",
+        "author": 1,
+        "taxInput": [
+            {
+                "kota_category": [
+                    6
+                ]
+            }
+        ]
+    }
+]

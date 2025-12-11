@@ -1,0 +1,62 @@
+{
+  "menu_args": {
+    "name": "Main Navigation",
+    "slug": "main-nav",
+    "description": "Main website navigation menu",
+    "location": "primary"
+  },
+  "create_post_args": {
+    "title": "Sample Blog Post",
+    "content": "This is the content of our sample blog post.",
+    "author": 1,
+    "status": "publish",
+    "excerpt": "A brief excerpt of the post",
+    "comment_status": "open",
+    "ping_status": "open",
+    "meta_input": {
+      "key1": "value1",
+      "key2": "value2"
+    }
+  },
+  "create_term_args": {
+    "taxonomy": "category",
+    "term": "Technology",
+    "description": "Posts about technology",
+    "slug": "tech",
+    "parent": 0
+  },
+  "custom_item_menu_args": {
+    "menu": "main-menu",
+    "title": "External Link",
+    "link": "https://example.com",
+    "description": "An external website link",
+    "attr_title": "Visit external site",
+    "target": "_blank",
+    "classes": "external-link custom-class",
+    "position": 5,
+    "parent_id": 0
+  },
+  "post_item_menu_args": {
+    "menu": "main-menu",
+    "post_id": 123,
+    "title": "Our Services",
+    "description": "Link to our services page",
+    "attr_title": "View our services",
+    "target": "_self",
+    "classes": "services-link",
+    "position": 3,
+    "parent_id": 0
+  },
+  "term_item_menu_args": {
+    "menu": "main-menu",
+    "taxonomy": "category",
+    "term_id": 456,
+    "title": "Technology News",
+    "description": "Technology category posts",
+    "attr_title": "Browse technology articles",
+    "target": "_self",
+    "classes": "category-link tech-category",
+    "position": 2,
+    "parent_id": 0
+  }
+}

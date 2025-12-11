@@ -1,0 +1,26 @@
+[
+    {
+        "name": "Aceh",
+        "slug": "aceh",
+        "taxonomy": "kota_category",
+        "description": "Rental Mobil Di Aceh"
+    },
+    {
+        "name": "Agam",
+        "slug": "agam",
+        "taxonomy": "kota_category",
+        "description": "Rental Mobil Di Agam"
+    },
+    {
+        "name": "Airmadidi",
+        "slug": "airmadidi",
+        "taxonomy": "kota_category",
+        "description": "Rental Mobil Di Airmadidi"
+    },
+    {
+        "name": "Ambon",
+        "slug": "ambon",
+        "taxonomy": "kota_category",
+        "description": "Rental Mobil Di Ambon"
+    }
+]
