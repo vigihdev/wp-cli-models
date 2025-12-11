@@ -4,121 +4,98 @@ declare(strict_types=1);
 
 namespace Vigihdev\WpCliModels\Entities;
 
-use WP_Post;
+use Vigihdev\Support\Collection;
+use Vigihdev\WpCliModels\DTOs\Entities\Menu\MenuItemEntityDto;
+use WP_Error;
 use WP_Term;
 
 final class MenuItemEntity
 {
-
     /**
-     * Mengambil semua item menu berdasarkan menu
+     * Mengambil item menu berdasarkan menu dan mengembalikan dalam bentuk collection
      *
      * @param int|string|WP_Term $menu ID menu, slug, atau objek WP_Term
      * @param array $args Argumen tambahan untuk mengambil menu item
-     * @return array Daftar item menu
+     * @return Collection<MenuItemEntityDto> Koleksi item menu dalam bentuk DTO
      */
-    public static function getItems(int|string|WP_Term $menu, array $args = []): array
+    public static function get(int|string|WP_Term $menu, array $args = []): Collection
     {
         $array_menu = wp_get_nav_menu_items($menu, $args);
 
         if (empty($array_menu)) {
-            return [];
+            return new Collection(data: []);
         }
 
-        // Setup nav menu items
-        return array_map('wp_setup_nav_menu_item', $array_menu);
+        $data = array_map('wp_setup_nav_menu_item', $array_menu);
+        $data = array_map(fn($v) => MenuItemEntityDto::fromQuery($v), $data);
+        return new Collection(data: $data);
+    }
+
+    public static function getTypeTitle(int|string|WP_Term $menu, string $type, string $title): ?MenuItemEntityDto
+    {
+        $items = self::get($menu)
+            ->filter(fn($dto) => strtolower($dto->getTitle()) === strtolower($title) && $dto->getType() === $type);
+        return $items->count() > 0 ? $items->first() : null;
+    }
+
+    public static function existByTitle(int|string|WP_Term $menu, string $type, string $title): bool
+    {
+        $items = self::get($menu)
+            ->filter(fn(MenuItemEntityDto $dto) => strtolower($dto->getTitle()) === strtolower($title) && $dto->getType() === $type);
+        return (bool) current($items);
     }
 
     /**
-     * Mengambil item menu tanpa parent (parent = 0)
+     * Membuat item menu baru berdasarkan nama menu dan data yang diberikan
+     *
+     * @param string $menuName Nama menu tempat item menu akan dibuat
+     * @param array $data Data item menu yang akan dibuat
+     * @return int|WP_Error ID item menu yang berhasil dibuat atau WP_Error jika gagal
+     */
+    public static function create(string $menuName, array $data): int|WP_Error
+    {
+        if (! MenuEntity::exists($menuName)) {
+            return new WP_Error(code: 404, message: "Menu '{$menuName}' tidak ditemukan");
+        }
+
+        if (empty($data)) {
+            return new WP_Error(code: 400, message: "Data item menu tidak boleh kosong");
+        }
+
+        $menuId = MenuEntity::get($menuName)->getTermId();
+        return wp_update_nav_menu_item($menuId, 0, $data);
+    }
+
+    public static function update(int $id, array $data) {}
+
+    /**
+     * Memeriksa apakah menu item dengan tipe dan judul tertentu ada
      *
      * @param int|string|WP_Term $menu ID menu, slug, atau objek WP_Term
-     * @param array $args Argumen tambahan untuk mengambil menu item
-     * @return array Daftar item menu tanpa parent
-     */
-    public static function getItemsWithoutParent(int|string|WP_Term $menu, array $args = []): array
-    {
-        $all_items = self::getItems($menu, $args);
-
-        if (empty($all_items)) {
-            return [];
-        }
-
-        // Filter item yang tidak memiliki parent (parent = 0)
-        return array_filter($all_items, function ($item) {
-            return isset($item->menu_item_parent) && (int)$item->menu_item_parent === 0;
-        });
-    }
-
-    /**
-     * Mencari menu item berdasarkan ID
-     *
-     * @param int $id ID menu item yang akan dicari
-     * @return WP_Post|null Instance WP_Post jika menu item ditemukan, null jika tidak
-     */
-    public static function findById(int $id): ?WP_Post
-    {
-        $menu_item = get_post($id);
-
-        if (!$menu_item || $menu_item->post_type !== 'nav_menu_item') {
-            return null;
-        }
-
-        return wp_setup_nav_menu_item($menu_item);
-    }
-
-    /**
-     * Mengambil semua menu item berdasarkan menu ID
-     *
-     * @param int $menu_id ID menu
-     * @param array $args Argumen tambahan untuk mengambil menu item
-     * @return array Daftar menu item
-     */
-    public static function findByMenuId(int $menu_id, array $args = []): array
-    {
-        $default_args = [
-            'order' => 'ASC',
-            'orderby' => 'menu_order',
-            'post_type' => 'nav_menu_item',
-            'post_status' => 'publish',
-            'output' => ARRAY_A,
-            'output_key' => 'menu_order',
-            'nopaging' => true,
-        ];
-
-        $query_args = wp_parse_args($args, $default_args);
-
-        $menu_items = wp_get_nav_menu_items($menu_id, $query_args);
-
-        if (empty($menu_items)) {
-            return [];
-        }
-
-        // Setup nav menu items
-        return array_map('wp_setup_nav_menu_item', $menu_items);
-    }
-
-    /**
-     * Memeriksa apakah menu item dengan ID tertentu ada
-     *
-     * @param int $id ID menu item yang akan diperiksa
+     * @param string $type Tipe menu item yang akan diperiksa
+     * @param string $title Judul menu item yang akan diperiksa
      * @return bool True jika menu item ditemukan, false jika tidak
      */
-    public static function exists(int $id): bool
+    public static function exists(int|string|WP_Term $menu, string $type, string $title): bool
     {
-        $menu_item = get_post($id);
-
-        return $menu_item && $menu_item->post_type === 'nav_menu_item';
+        $items = self::get($menu)
+            ->filter(fn($dto) => strtolower($dto->getTitle()) === strtolower($title) && $dto->getType() === $type);
+        return (bool) current($items);
     }
 
     /**
      * Menghapus menu item berdasarkan ID
      *
-     * @param int $id ID menu item yang akan dihapus
+     * @param int|string|WP_Term $menu ID menu, slug, atau objek WP_Term
+     * @param string $type Tipe menu item yang akan dihapus
+     * @param string $title Judul menu item yang akan dihapus
      * @return bool True jika berhasil dihapus, false jika gagal
      */
-    public static function delete(int $id): bool
+    public static function delete(int|string|WP_Term $menu, string $type, string $title): bool
     {
-        return (bool) wp_delete_post($id, true);
+        if (self::exists($menu, $type, $title)) {
+            return (bool) wp_delete_post(self::getTypeTitle($menu, $type, $title)->getId(), true);
+        }
+        return false;
     }
 }

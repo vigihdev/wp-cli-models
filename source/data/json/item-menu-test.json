@@ -1,0 +1,32 @@
+[
+    {
+        "type": "custom",
+        "label": "",
+        "title": "Beranda",
+        "url": "https://example.com/"
+    },
+    {
+        "type": "custom",
+        "label": "",
+        "title": "Tentang Kami",
+        "url": "https://example.com/about"
+    },
+    {
+        "type": "custom",
+        "label": "",
+        "title": "Layanan",
+        "url": "https://example.com/services"
+    },
+    {
+        "type": "custom",
+        "label": "",
+        "title": "Blog",
+        "url": "https://example.com/blog"
+    },
+    {
+        "type": "custom",
+        "label": "",
+        "title": "Kontak",
+        "url": "https://example.com/contact"
+    }
+]

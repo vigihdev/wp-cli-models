@@ -1,0 +1,81 @@
+[
+    {
+        "type": "custom",
+        "label": "",
+        "title": "Home",
+        "url": "https://okkarentorg.id/",
+        "items": []
+    },
+    {
+        "type": "custom",
+        "label": "",
+        "title": "Daftar Harga",
+        "url": "#",
+        "items": [
+            {
+                "type": "custom",
+                "label": "",
+                "title": "Daftar Harga Lepas Kunci",
+                "url": "#"
+            },
+            {
+                "type": "custom",
+                "label": "",
+                "title": "Harga Sewa Mobil Dalam Kota",
+                "url": "https://okkarentorg.id/daftar-harga-sewa-mobil-dalam-kota-surabaya/"
+            },
+            {
+                "type": "custom",
+                "label": "",
+                "title": "Harga Sewa Mobil Luar Kota",
+                "url": "https://okkarentorg.id/daftar-harga-sewa-mobil-luar-kota-surabaya/"
+            },
+            {
+                "type": "custom",
+                "label": "",
+                "title": "Harga Sewa Bus Pariwisata",
+                "url": "https://okkarentorg.id/harga-sewa-bus-pariwisata/"
+            },
+            {
+                "type": "custom",
+                "label": "",
+                "title": "Harga Sewa Mobil Bulanan",
+                "url": "https://okkarentorg.id/sewa-mobil-bulanan-surabaya/"
+            },
+            {
+                "type": "custom",
+                "label": "",
+                "title": "Harga Sewa Lepas Kunci",
+                "url": "https://okkarentorg.id/daftar-harga-sewa-mobil-lepas-kunci/"
+            }
+        ]
+    },
+    {
+        "type": "custom",
+        "label": "",
+        "title": "Services",
+        "url": "#",
+        "items": []
+    },
+    {
+        "type": "custom",
+        "label": "",
+        "title": "Tentang Kami",
+        "url": "https://okkarentorg.id/tentang-kami/",
+        "items": []
+    },
+    {
+        "type": "custom",
+        "label": "",
+        "title": "Kerjasama Mitra",
+        "url": "#",
+        "items": []
+    },
+    {
+        "type": "custom",
+        "label": "",
+        "title": "Blog",
+        "url": "#",
+        "items": []
+    }
+]

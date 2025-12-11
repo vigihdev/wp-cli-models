@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Vigihdev\WpCliModels\DTOs\Fields;
 
+use Vigihdev\WpCliModels\Contracts\Able\WpAbleInterface;
 use Vigihdev\WpCliModels\Contracts\Fields\MenuItemFieldInterface;
 
 /**
@@ -11,7 +12,7 @@ use Vigihdev\WpCliModels\Contracts\Fields\MenuItemFieldInterface;
  *
  * DTO untuk menyimpan dan mengakses struktur data item menu dasar di WP-CLI
  */
-final class MenuItemFieldDto extends BaseFieldDto implements MenuItemFieldInterface
+final class MenuItemFieldDto extends BaseFieldDto implements MenuItemFieldInterface, WpAbleInterface
 {
     /**
      * Membuat instance objek MenuItemFieldDto dengan parameter yang ditentukan
@@ -68,6 +69,36 @@ final class MenuItemFieldDto extends BaseFieldDto implements MenuItemFieldInterf
         return $this->url;
     }
 
+    public function toWpFormat(): array
+    {
+        $mapping = [
+            'type'        => 'menu-item-type',
+            'title'       => 'menu-item-title',
+            'label'       => 'menu-item-title',
+            'url'         => 'menu-item-url',
+            'object_id'   => 'menu-item-object-id',
+            'object'      => 'menu-item-object',
+            'parent_id'   => 'menu-item-parent-id',
+            'classes'     => 'menu-item-classes',
+            'target'      => 'menu-item-target',
+            'attr_title'  => 'menu-item-attr-title',
+        ];
+
+        $data = $this->toArray();
+        $wpData = [];
+
+        foreach ($data as $key => $value) {
+            if (isset($mapping[$key])) {
+                $wpData[$mapping[$key]] = $value;
+            }
+        }
+
+        // Default values
+        $wpData['menu-item-status'] = 'publish';
+
+        return $wpData;
+    }
+
     /**
      * Mengkonversi objek MenuItemFieldDto menjadi array
      *
@@ -95,10 +126,10 @@ final class MenuItemFieldDto extends BaseFieldDto implements MenuItemFieldInterf
     public static function fromArray(array $data): static
     {
         return new self(
-            (string) ($data['type'] ?? ''),
-            isset($data['label']) ? (string) $data['label'] : null,
-            isset($data['title']) ? (string) $data['title'] : null,
-            isset($data['url']) ? (string) $data['url'] : null,
+            type: (string) ($data['type'] ?? ''),
+            label: isset($data['label']) ? (string) $data['label'] : null,
+            title: isset($data['title']) ? (string) $data['title'] : null,
+            url: isset($data['url']) ? (string) $data['url'] : null,
         );
     }
 }
