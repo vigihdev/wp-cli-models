@@ -21,7 +21,7 @@ final class DryRunPresetExport
     public function renderCompact(array $items, array $fields): void
     {
         $this->renderTitle();
-        // $this->renderTable($items, $fields);
+        $this->renderTable($items, $fields);
         // $this->renderDefinitionList();
         $this->renderFooter();
     }
