@@ -11,6 +11,7 @@ final class DryRunPresetExport
     public function __construct(
         private readonly CliStyle $io,
         private readonly string $output,
+        private readonly string $format,
         private readonly string $name,
         private readonly int $total,
     ) {}
