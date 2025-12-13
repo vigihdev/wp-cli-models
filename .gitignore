@@ -5,6 +5,7 @@
 .cursor
 .git
 .vscode
+.marscode/
 GEMINI.md
 composer.lock
 vendor/

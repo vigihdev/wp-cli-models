@@ -4,12 +4,46 @@ declare(strict_types=1);
 
 namespace Vigihdev\WpCliModels\Entities;
 
+use Vigihdev\Support\Collection;
+use Vigihdev\WpCliModels\DTOs\Entities\Post\PostEntityDto;
 use WP_Post;
 use WP_Error;
 use WP_Query;
 
 final class PostEntity
 {
+
+    /**
+     *
+     * @param int $limit
+     * @param int $offset
+     * @param array $args
+     * @return Collection<PostEntityDto>
+     */
+    public static function filter(int $limit = 50, int $offset = 0, array $args = []): Collection
+    {
+        $defaults = [
+            'post_type' => 'post',
+            'post_status' => 'publish',
+            'posts_per_page' => $limit,
+            'offset' => $offset,
+        ];
+
+        $queryArgs = wp_parse_args($args, $defaults);
+        $query = new WP_Query($queryArgs);
+
+        if (!$query->have_posts()) {
+            return new Collection([]);
+        }
+
+        $data = array_map(
+            fn($post) => PostEntityDto::fromQuery($post),
+            $query->get_posts()
+        );
+
+        return new Collection($data);
+    }
+
     /**
      * Mencari post berdasarkan ID
      *
