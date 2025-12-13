@@ -10,17 +10,19 @@ final class DryRunPresetExport
 {
     public function __construct(
         private readonly CliStyle $io,
-        private readonly string $output,
         private readonly string $format,
         private readonly string $name,
         private readonly int $total,
+        private readonly ?string $output = null,
     ) {}
 
     public function renderTitle(): void
     {
         $io = $this->io;
         $io->title("🔍 DRY RUN - Preview Data Export {$this->name}");
-        $io->note('Data akan diekspor ke file ' . $io->highlightText($this->output));
+        if (!$this->output === null) {
+            $io->note('Data akan diekspor ke file ' . $io->highlightText($this->output));
+        }
     }
 
     private function renderCompact(array $items, array $fields): void
