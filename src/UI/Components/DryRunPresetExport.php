@@ -18,11 +18,17 @@ final class DryRunPresetExport
 
     public function renderTitle(): void
     {
+
         $io = $this->io;
         $io->title("🔍 DRY RUN - Preview Data Export {$this->name}");
+
         if (!$this->output === null) {
             $io->note('Data akan diekspor ke file ' . $io->highlightText($this->output));
         }
+
+        $io->line(
+            sprintf("%s  Total file yang akan di export %s", $io->textGreen("✔"), $io->highlightText("({$this->total})"))
+        );
     }
 
     private function renderCompact(array $items, array $fields): void
