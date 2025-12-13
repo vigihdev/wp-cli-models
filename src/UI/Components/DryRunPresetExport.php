@@ -16,13 +16,13 @@ final class DryRunPresetExport
         private readonly ?string $output = null,
     ) {}
 
-    public function renderTitle(): void
+    private function renderTitle(): void
     {
 
         $io = $this->io;
         $io->title("🔍 DRY RUN - Preview Data Export {$this->name}");
 
-        if (!$this->output === null) {
+        if ($this->output) {
             $io->note('Data akan diekspor ke file ' . $io->highlightText($this->output));
         }
 
@@ -53,7 +53,7 @@ final class DryRunPresetExport
         $io->definitionList([
             'Total ' . $this->name => (string) $this->total,
             'Mode' => 'Dry Run',
-            'File' => basename($this->output)
+            'File' => basename($this->output ?? ''),
         ]);
         $io->hr('-', 75);
         $io->newLine();
