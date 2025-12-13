@@ -4,45 +4,49 @@ declare(strict_types=1);
 
 namespace Vigihdev\WpCliModels\UI\Components;
 
+use SplFileInfo;
 use Vigihdev\WpCliModels\UI\CliStyle;
+use WP_CLI;
 
 final class FileInfoPreset
 {
+    private SplFileInfo $fileInfo;
+
     public function __construct(
         private readonly CliStyle $io,
-        private readonly string $name,
-        private readonly int $total,
-    ) {}
+        private readonly string $filepath,
+    ) {
+        if (!file_exists($filepath) || !is_writable($filepath)) {
+            WP_CLI::error(sprintf("File %s tidak ditemukan atau tidak dapat ditulis.", $filepath));
+        }
 
-    public function renderTitle(): void
-    {
-        $io = $this->io;
-        $io->title("🔍 List - Data {$this->name}");
+        $this->fileInfo = new SplFileInfo($filepath);
     }
 
-    public function renderCompact(array $items, array $fields): void
-    {
-        $this->renderTitle();
-    }
-
-    public function renderTable(array $items, array $fields): void
+    public function renderList(): void
     {
         $io = $this->io;
-        $io->table($items, $fields);
-        $io->newLine();
+
+        foreach ($this->fileAttributes() as $key => $value) {
+            $io->line(sprintf("%s: %s", $key, $io->textYellow($value, 'y')));
+        }
     }
 
-    public function renderDefinitionList()
+    private function fileAttributes()
     {
-        $io = $this->io;
-        $io->hr('-', 75);
-        $io->newLine();
-    }
+        return [
+            '📍 Path Lengkap' => $this->fileInfo->getRealPath(),
+            '📄 Nama File' => $this->fileInfo->getFilename(),
+            '🎯 Format' => strtoupper($this->fileInfo->getExtension()),
+            '📦 Ukuran' => sprintf("%s (%s bytes)", $this->fileInfo->getSize(), number_format($this->fileInfo->getSize())),
+            '🕐 Dibuat' => date('Y-m-d H:i:s', $this->fileInfo->getCTime()),
+            '✏️  Dimodifikasi' => date('Y-m-d H:i:s', $this->fileInfo->getMTime()),
+            '🔐 Permission' => $this->fileInfo->getPerms(),
+            '🔢 Inode' => $this->fileInfo->getInode(),
+        ];
 
-    public function renderFooter(): void
-    {
-        $io = $this->io;
-        $io->successWithIcon('Dry run selesai!');
-        $io->block('Gunakan tanpa --dry-run untuk eksekusi sebenarnya.', 'note');
+        // WP_CLI::line(sprintf("💾 Device: %s", $this->fileInfo->getDevice()));
+        // WP_CLI::line(sprintf("🔍 MD5 Checksum: %s", $this->fileInfo->getMD5()));
+        // WP_CLI::line(sprintf("🔍 SHA1 Checksum: %s", $this->fileInfo->getSHA1()));
     }
 }
