@@ -29,15 +29,13 @@ final class DryRunPresetExport
         $io->line(
             sprintf("%s Total file yang akan di export %s %s", $io->textGreen("✔"), $io->highlightText("({$this->total})"), $this->name)
         );
-
-        $this->renderFooter();
     }
 
-    private function renderCompact(array $items, array $fields): void
+    public function renderCompact(array $items, array $fields): void
     {
         $this->renderTitle();
-        $this->renderTable($items, $fields);
-        $this->renderDefinitionList();
+        // $this->renderTable($items, $fields);
+        // $this->renderDefinitionList();
         $this->renderFooter();
     }
 
@@ -63,8 +61,11 @@ final class DryRunPresetExport
 
     private function renderFooter(): void
     {
+
         $io = $this->io;
+        $io->hr('-', 75);
         $io->successWithIcon('Dry run selesai!');
         $io->block('Gunakan tanpa --dry-run untuk eksekusi sebenarnya.', 'note');
+        $io->hr('-', 75);
     }
 }
