@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Vigihdev\WpCliModels\UI\Components;
 
+use Symfony\Component\Filesystem\Path;
 use Vigihdev\WpCliModels\UI\CliStyle;
 
 final class DryRunPresetExport
@@ -32,7 +33,8 @@ final class DryRunPresetExport
         $io->title("🔍 DRY RUN - Preview Data Export {$this->name}");
 
         if ($this->output) {
-            $io->note('Data akan diekspor ke file ' . $io->highlightText($this->output));
+            $output = Path::isAbsolute($this->output) ? $this->output : Path::join(getcwd() ?? '', $this->output);
+            $io->note('Data akan diekspor ke file ' . $io->highlightText($output));
         }
 
         $io->line(
