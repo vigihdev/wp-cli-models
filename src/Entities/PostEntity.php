@@ -15,6 +15,22 @@ final class PostEntity
 
     /**
      *
+     * @param int $postId
+     * @return PostEntityDto|null
+     */
+    public static function get(int $postId): ?PostEntityDto
+    {
+        $post = get_post($postId);
+
+        if (!$post || is_wp_error($post)) {
+            return null;
+        }
+
+        return PostEntityDto::fromQuery($post);
+    }
+
+    /**
+     *
      * @param int $limit
      * @param int $offset
      * @param array $args
