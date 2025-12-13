@@ -60,19 +60,16 @@ final class JsonFormatter extends BaseFormater implements FormatterInterface
     {
         $items = [];
         foreach ($this->items as $item) {
-            $items[] = $this->extract($item);
+
+            if (is_object($item)) {
+                $item = get_object_vars($item);
+            }
+
+            if (is_array($item)) {
+                $items[] = array_filter($item, fn($key) => in_array($key, $this->fields), ARRAY_FILTER_USE_KEY);
+            }
         }
+
         file_put_contents($path, json_encode($items, JSON_PRETTY_PRINT));
-    }
-
-    private function extract($item): array
-    {
-        $result = [];
-
-        foreach ($this->fields as $field) {
-            $result[] = is_object($item) ? $item->$field ?? null : $item[$field] ?? null;
-        }
-
-        return $result;
     }
 }
