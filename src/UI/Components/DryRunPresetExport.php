@@ -29,6 +29,8 @@ final class DryRunPresetExport
         $io->line(
             sprintf("%s Total file yang akan di export %s %s", $io->textGreen("✔"), $io->highlightText("({$this->total})"), $this->name)
         );
+
+        $this->renderFooter();
     }
 
     private function renderCompact(array $items, array $fields): void
