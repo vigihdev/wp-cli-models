@@ -16,6 +16,15 @@ final class DryRunPresetExport
         private readonly ?string $output = null,
     ) {}
 
+
+    public function renderCompact(array $items, array $fields): void
+    {
+        $this->renderTitle();
+        // $this->renderTable($items, $fields);
+        // $this->renderDefinitionList();
+        $this->renderFooter();
+    }
+
     private function renderTitle(): void
     {
 
@@ -29,14 +38,6 @@ final class DryRunPresetExport
         $io->line(
             sprintf("%s Total file yang akan di export %s %s", $io->textGreen("✔"), $io->highlightText("({$this->total})"), $this->name)
         );
-    }
-
-    public function renderCompact(array $items, array $fields): void
-    {
-        $this->renderTitle();
-        // $this->renderTable($items, $fields);
-        // $this->renderDefinitionList();
-        $this->renderFooter();
     }
 
     private function renderTable(array $items, array $fields): void
