@@ -23,9 +23,6 @@ final class ListPreset
     public function renderCompact(array $items, array $fields): void
     {
         $this->renderTitle();
-        // $this->renderTable($items, $fields);
-        // $this->renderDefinitionList();
-        // $this->renderFooter();
     }
 
     public function renderTable(array $items, array $fields): void
@@ -39,12 +36,6 @@ final class ListPreset
     {
         $io = $this->io;
         $io->hr('-', 75);
-        // $io->definitionList([
-        //     'Total ' . $this->name => (string) $this->total,
-        //     'Mode' => 'Dry Run',
-        //     'File' => basename($this->filepath)
-        // ]);
-        // $io->hr('-', 75);
         $io->newLine();
     }
 

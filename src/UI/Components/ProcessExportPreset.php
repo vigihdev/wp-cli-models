@@ -33,17 +33,31 @@ final class ProcessExportPreset
         $io->title('🚀 Memulai Export ' . $this->name);
         $output = Path::isAbsolute($this->output) ? $this->output : Path::join(getcwd() ?? '', $this->output);
 
-        $io->line(
-            sprintf("📁 Export akan disimpan di %s", $io->highlightText($output))
-        );
-        $io->hr();
+        // $io->line(
+        //     sprintf("📁 Export akan disimpan di %s", $io->highlightText($output))
+        // );
 
+        $io->line(
+            sprintf("%s 📁 Cek directory %s", $io->textInfo('[INFO]'), $io->highlightText($output))
+        );
         $this->successAsk = $this->ask->directory($this->output);
+        sleep(1);
+        if ($this->successAsk) {
+            $execTime = $this->countingInSeconds();
+            $io->line(
+                sprintf("%s 📁 Cek directory %s detik", $io->textInfo('[SUCCESS]'), $io->highlightText($execTime))
+            );
+        }
     }
 
     public function getSuccessAsk(): bool
     {
         return $this->successAsk;
+    }
+
+    public function countingInSeconds(): string
+    {
+        return number_format(microtime(true) - $this->startTime, 2);
     }
 
     public function getStartTime(): string|float
