@@ -4,9 +4,7 @@ declare(strict_types=1);
 
 namespace Vigihdev\WpCliModels\UI\Components;
 
-use Symfony\Component\Filesystem\Path;
 use Vigihdev\WpCliModels\UI\CliStyle;
-use WP_CLI;
 
 final class ProcessExportPreset
 {
@@ -17,6 +15,7 @@ final class ProcessExportPreset
     public function __construct(
         private readonly CliStyle $io,
         private readonly string $output,
+        private readonly string $format,
         private readonly string|float $startTime,
         private readonly string $name,
         private readonly int $total,
