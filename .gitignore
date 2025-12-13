@@ -10,8 +10,11 @@ GEMINI.md
 composer.lock
 vendor/
 dev.php
+scripts/
+dev.js
 .lingma
 .grok/
 .phpunit.cache/
 coverage/
 /data
+nodemon.json

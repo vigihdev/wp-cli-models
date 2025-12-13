@@ -49,6 +49,27 @@ final class AskPreset
             return true;
         }
 
+        if (! is_writable($baseDir)) {
+            $io->line(
+                implode(" ", [
+                    $io->textRed("[FATAL]"),
+                    "❌ Directory",
+                    $io->highlightText($baseDir),
+                    "tidak dapat dituliskan.",
+                    $io->highlightText("Saran: Periksa izin tulis (chmod/chown) pada path.")
+                ])
+            );
+
+            $io->line(
+                $io->textYellow("⭕ Process di hentikan")
+            );
+
+            $io->hr();
+            $io->log("");
+
+            return false;
+        }
+
         return true;
     }
 }

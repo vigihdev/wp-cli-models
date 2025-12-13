@@ -4,12 +4,14 @@ declare(strict_types=1);
 
 namespace Vigihdev\WpCliModels\UI\Components;
 
+use Symfony\Component\Filesystem\Path;
 use Vigihdev\WpCliModels\UI\CliStyle;
 
 final class ProcessExportPreset
 {
     private ImportSummary $summary;
     private ProgressLog $progressLog;
+    private bool $successAsk = false;
     private AskPreset $ask;
 
     public function __construct(
@@ -29,12 +31,22 @@ final class ProcessExportPreset
     {
         $io = $this->io;
         $io->title('🚀 Memulai Export ' . $this->name);
+        $output = Path::isAbsolute($this->output) ? $this->output : Path::join(getcwd() ?? '', $this->output);
+
+        $io->line(
+            sprintf("📁 Export akan disimpan di %s", $io->highlightText($output))
+        );
         $io->hr();
 
-        $this->ask->directory($this->output);
+        $this->successAsk = $this->ask->directory($this->output);
     }
 
-    private function getStartTime(): string|float
+    public function getSuccessAsk(): bool
+    {
+        return $this->successAsk;
+    }
+
+    public function getStartTime(): string|float
     {
         return $this->startTime;
     }
