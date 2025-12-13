@@ -123,7 +123,7 @@ final class CliStyle
     {
         $fields = array_map(function ($v) {
             $v = ucfirst($v);
-            return WP_CLI::colorize("%_{$v}%n");
+            return WP_CLI::colorize("%G{$v}%n");
         }, $fields);
         $table = new Table();
         $table->setHeaders($fields);
