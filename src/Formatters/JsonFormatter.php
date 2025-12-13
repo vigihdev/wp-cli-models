@@ -58,6 +58,21 @@ final class JsonFormatter extends BaseFormater implements FormatterInterface
 
     protected function write(string $path): void
     {
-        file_put_contents($path, json_encode($this->items, JSON_PRETTY_PRINT));
+        $items = [];
+        foreach ($this->items as $item) {
+            $items[] = $this->extract($item);
+        }
+        file_put_contents($path, json_encode($items, JSON_PRETTY_PRINT));
+    }
+
+    private function extract($item): array
+    {
+        $result = [];
+
+        foreach ($this->fields as $field) {
+            $result[] = is_object($item) ? $item->$field ?? null : $item[$field] ?? null;
+        }
+
+        return $result;
     }
 }
