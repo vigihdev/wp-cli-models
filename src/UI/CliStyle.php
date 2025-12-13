@@ -102,6 +102,12 @@ final class CliStyle
         return WP_CLI::colorize("%y{$message}%n");
     }
 
+    public function highlightText(string $message): string
+    {
+        return WP_CLI::colorize("%_{$message}%n");
+    }
+
+
     public function start(string $message)
     {
         WP_CLI::line("🚀 {$message}");
