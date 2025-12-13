@@ -139,7 +139,7 @@ final class CliStyle
     {
         WP_CLI::log("");
         WP_CLI::log(
-            WP_CLI::colorize("%C[NOTE]%n %w{$message}%n")
+            WP_CLI::colorize("%C[NOTE]%n $message")
         );
         WP_CLI::log("");
     }
