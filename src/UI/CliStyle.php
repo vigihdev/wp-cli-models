@@ -313,9 +313,12 @@ final class CliStyle
     /**
      * Tampilkan key-value pairs
      */
-    public function definitionList(array $items): void
+    public function definitionList(array $items, bool $hr = false): void
     {
         WP_CLI::log("");
+        if ($hr) {
+            $this->hr();
+        }
 
         // Cari key terpanjang untuk alignment
         $maxLength = 0;
@@ -332,7 +335,9 @@ final class CliStyle
                 WP_CLI::colorize("%G{$key}:%n{$spaces} {$value}")
             );
         }
-
+        if ($hr) {
+            $this->hr();
+        }
         WP_CLI::log("");
     }
 
