@@ -10,6 +10,10 @@ use Vigihdev\WpCliModels\UI\CliStyle;
 
 final class WpCliExceptionHandler implements HandlerExceptionInterface
 {
+    private const TAB = '     ';
+    private const SPACE = '  ';
+    private const LINE = "\n";
+
     private CliStyle $io;
     public function handle(CliStyle $io, Throwable $e): void
     {
@@ -26,11 +30,34 @@ final class WpCliExceptionHandler implements HandlerExceptionInterface
 
     private function printException(WpCliModelException $e): void
     {
-        $message = implode(' ', [
-            $e->getMessage(),
-            implode(' ', array_values($e->getContext())),
-            $e->getSolution(),
-        ]);
-        var_dump($message);
+
+        $io = $this->io;
+        $contexts = $e->getContext();
+        $solutions = $e->getSolutions();
+
+        $message = $e->getMessage();
+
+        // Jika ada konteks, tambahkan ke pesan
+        if (is_array($contexts) && count($contexts) > 0) {
+            foreach ($contexts as $key => $value) {
+                $message .= self::LINE;
+                $message .= self::TAB . $key . ':';
+                $message .= self::LINE . self::TAB . self::SPACE . $io->highlightText($value);
+            }
+        }
+
+        // Jika ada solusi, tambahkan ke pesan
+        if (is_array($solutions) && count($solutions) > 0) {
+            $message .= self::LINE;
+            $message .= self::LINE;
+            $message .= self::TAB . $io->textGreen('Saran :');
+
+            foreach ($solutions as $solution) {
+                $message .= self::LINE . self::TAB . self::SPACE . "{$io->textGreen("✔ {$solution}", '%g')}";
+            }
+        }
+
+
+        $io->error($message);
     }
 }

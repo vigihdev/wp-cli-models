@@ -104,7 +104,7 @@ final class CliStyle
 
     public function highlightText(string $message): string
     {
-        return WP_CLI::colorize("%_{$message}%n");
+        return WP_CLI::colorize("%C{$message}%n");
     }
 
 

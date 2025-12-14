@@ -7,17 +7,17 @@ namespace Vigihdev\WpCliModels\Exceptions;
 abstract class WpCliModelException extends \RuntimeException
 {
     protected array $context = [];
-    protected ?string $solution = null;
+    protected array $solutions = [];
 
     public function __construct(
         string $message,
         array $context = [],
         int $code = 0,
         \Throwable $previous = null,
-        ?string $solution = null
+        array $solutions = []
     ) {
         $this->context = $context;
-        $this->solution = $solution;
+        $this->solutions = $solutions;
         parent::__construct($message, $code, $previous);
     }
 
@@ -26,9 +26,9 @@ abstract class WpCliModelException extends \RuntimeException
         return $this->context;
     }
 
-    public function getSolution(): ?string
+    public function getSolutions(): array
     {
-        return $this->solution;
+        return $this->solutions;
     }
 
     public function withContext(array $context): self

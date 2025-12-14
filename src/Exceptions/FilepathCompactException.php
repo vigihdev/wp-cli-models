@@ -14,7 +14,11 @@ final class FilepathCompactException extends WpCliModelException
             context: [
                 'filepath' => $filepath,
             ],
-            solution: "Periksa path file dan pastikan file ada"
+            solutions: [
+                "Periksa path file",
+                "Pastikan file ada",
+                "Periksa izin tulis (chmod/chown)"
+            ]
         );
     }
 
@@ -25,7 +29,9 @@ final class FilepathCompactException extends WpCliModelException
             context: [
                 'filepath' => $filepath,
             ],
-            solution: "Periksa permission file: chmod +r " . basename($filepath)
+            solutions: [
+                "Periksa permission file: chmod +r " . basename($filepath)
+            ]
         );
     }
 
@@ -36,35 +42,27 @@ final class FilepathCompactException extends WpCliModelException
             context: [
                 'filepath' => $filepath,
             ],
-            solution: "Periksa permission file atau gunakan --overwrite"
+            solutions: [
+                "Periksa permission file atau gunakan --overwrite"
+            ]
         );
     }
 
     public static function invalidExtension(string $filepath, string $expected): self
     {
         $actual = pathinfo($filepath, PATHINFO_EXTENSION) ?: 'none';
-
         return new self(
             message: sprintf("File harus berekstensi .%s", $expected),
             context: [
                 'filepath' => $filepath,
             ],
-            solution: sprintf("Ekstensi saat ini: .%s", $actual)
+            solutions: [
+                sprintf("Ekstensi saat ini: .%s", $actual),
+                "Ubah ekstensi file atau gunakan file yang sesuai"
+            ]
         );
     }
 
-    public static function invalidExtensionJson(string $filepath): self
-    {
-        $actual = pathinfo($filepath, PATHINFO_EXTENSION) ?: 'none';
-
-        return new self(
-            message: "File harus berekstensi .json",
-            context: [
-                'filepath' => $filepath,
-            ],
-            solution: sprintf("Ekstensi saat ini: .%s", $actual)
-        );
-    }
 
     public static function invalidJson(string $filepath, ?string $error = null): self
     {
@@ -78,7 +76,88 @@ final class FilepathCompactException extends WpCliModelException
             context: [
                 'filepath' => $filepath,
             ],
-            solution: "Validasi file menggunakan jsonlint.com"
+            solutions: ["Validasi file menggunakan jsonlint.com"]
+        );
+    }
+
+    public static function notDirectory(string $filepath): self
+    {
+        return new self(
+            message: "Path harus berupa direktori",
+            context: ['filepath' => $filepath],
+            solutions: ["Gunakan path direktori yang valid"]
+        );
+    }
+
+    public static function notFile(string $filepath): self
+    {
+        return new self(
+            message: "Path harus berupa file (bukan direktori)",
+            context: ['filepath' => $filepath],
+            solutions: [
+                "Gunakan path file yang valid",
+                "Pastikan path tidak berakhir dengan slash (/) jika dimaksudkan sebagai file"
+            ]
+        );
+    }
+
+
+    public static function emptyPath(): self
+    {
+        return new self(
+            message: "Path file tidak boleh kosong",
+            solutions: ["Berikan path file yang valid"]
+        );
+    }
+
+    public static function invalidCharacters(string $path): self
+    {
+        return new self(
+            message: "Path mengandung karakter tidak valid",
+            context: [
+                'filepath' => $path
+            ],
+            solutions: [
+                "Hindari karakter khusus dalam path",
+                "Gunakan hanya huruf, angka, dan underscore (_)"
+            ]
+        );
+    }
+
+
+    public static function tooLong(string $path, int $maxLength): self
+    {
+        return new self(
+            message: sprintf('Path melebihi panjang maksimum (%d karakter)', $maxLength),
+            context: ['filepath' => $path, 'length' => strlen($path)],
+            solutions: ['Persingkat path atau tingkatkan batas maksimum']
+        );
+    }
+
+    public static function containsSpaces(string $path): self
+    {
+        return new self(
+            message: 'Path mengandung spasi',
+            context: ['filepath' => $path],
+            solutions: ['Ganti spasi dengan underscore (_) atau dash (-)']
+        );
+    }
+
+    public static function relativePathNotAllowed(string $path): self
+    {
+        return new self(
+            message: 'Path relatif tidak diizinkan',
+            context: ['filepath' => $path],
+            solutions: ['Gunakan path absolut']
+        );
+    }
+
+    public static function reservedFilename(string $path): self
+    {
+        return new self(
+            message: 'Nama file termasuk reserved name di sistem operasi',
+            context: ['filepath' => $path],
+            solutions: ['Ganti nama file yang tidak menggunakan kata reserved (con, aux, prn, dll)']
         );
     }
 }
