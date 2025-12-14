@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Vigihdev\WpCliModels\Validators\Support;
+namespace Vigihdev\WpCliModels\Validators;
 
 use Vigihdev\WpCliModels\Exceptions\FileException;
 
