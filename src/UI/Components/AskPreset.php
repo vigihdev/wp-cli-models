@@ -11,6 +11,9 @@ use WP_CLI;
 final class AskPreset
 {
 
+    private const TAB = "    ";
+    private const LINE = "\n";
+
     public function __construct(
         private readonly CliStyle $io,
     ) {}
@@ -31,14 +34,15 @@ final class AskPreset
             );
 
             if (! mkdir($baseDir, 0755, true)) {
-                $io->line(
-                    $io->textRed("‼️  Directory baru gagal di buat. Saran: Periksa izin tulis (chmod/chown) pada path induk.")
+                $io->logError("Directory", $io->highlightText($baseDir), "baru gagal di buat.");
+
+                $this->renderSarans(
+                    "Periksa izin tulis (chmod/chown) pada path induk.",
+                    "Periksa apakah path memiliki spasi.",
+                    "Periksa apakah path memiliki karakter khusus."
                 );
 
-                $io->line(
-                    $io->textRed("⭕ Process di hentikan")
-                );
-
+                $io->line($io->textYellow("⭕ Process di hentikan"));
                 return false;
             }
 
@@ -50,20 +54,16 @@ final class AskPreset
         }
 
         if (! is_writable($baseDir)) {
-            $io->line(
-                implode(" ", [
-                    $io->textRed("[FATAL]"),
-                    "❌ Directory",
-                    $io->highlightText($baseDir),
-                    "tidak dapat dituliskan.",
-                    $io->highlightText("Saran: Periksa izin tulis (chmod/chown) pada path.")
-                ])
+            $io->log("");
+            $io->logFatal("Directory", $io->highlightText($baseDir), "tidak dapat ditulis.");
+
+            $this->renderSarans(
+                "Periksa izin tulis (chmod/chown) pada path.",
+                "Periksa apakah path memiliki spasi.",
+                "Periksa apakah path memiliki karakter khusus."
             );
 
-            $io->line(
-                $io->textYellow("⭕ Process di hentikan")
-            );
-
+            $io->line($io->textYellow("⭕ Process di hentikan"));
             $io->hr();
             $io->log("");
 
@@ -71,5 +71,17 @@ final class AskPreset
         }
 
         return true;
+    }
+
+    private function renderSarans(...$sarans)
+    {
+
+        $io = $this->io;
+        $io->log("");
+        $io->line($io->textGreen(self::TAB . "sarans: "));
+        foreach ($sarans as $saran) {
+            $io->line($io->textGreen(self::TAB . self::TAB . "✔ {$saran}", '%g'));
+        }
+        $io->log("");
     }
 }

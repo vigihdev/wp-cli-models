@@ -17,6 +17,15 @@ final class FilepathCompactValidator
         return new self($filepath);
     }
 
+    public function mustBeExtension(string $extension): self
+    {
+        $ext = strtolower(pathinfo($this->filepath, PATHINFO_EXTENSION));
+        if ($ext !== $extension) {
+            throw FilepathCompactException::invalidExtension($this->filepath, $extension);
+        }
+        return $this;
+    }
+
     /**
      * Validasi untuk import (file harus ada dan readable)
      * 

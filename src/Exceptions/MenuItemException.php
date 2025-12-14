@@ -16,118 +16,163 @@ final class MenuItemException extends WpCliModelException
     public const INVALID_TYPE = 2008;
     public const INVALID_POSITION = 2009;
 
-    private ?int $itemId;
-    private ?int $parentId;
-    private ?string $itemTitle;
-
-    public function __construct(
-        string $message,
-        ?int $itemId = null,
-        ?int $parentId = null,
-        ?string $itemTitle = null,
-        array $context = [],
-        int $code = 0,
-        \Throwable $previous = null
-    ) {
-        $this->itemId = $itemId;
-        $this->parentId = $parentId;
-        $this->itemTitle = $itemTitle;
-
-        $context['item_id'] = $itemId;
-        $context['parent_id'] = $parentId;
-        $context['item_title'] = $itemTitle;
-
-        parent::__construct($message, $context, $code, $previous);
-    }
-
     public static function notFound(int $itemId): self
     {
         return new self(
-            sprintf("Menu item tidak ditemukan dengan ID: %d", $itemId),
-            $itemId,
-            null,
-            null,
-            [],
-            self::NOT_FOUND
+            message: sprintf("Menu item tidak ditemukan dengan ID: %d", $itemId),
+            context: [
+                'item_id' => $itemId,
+            ],
+            code: self::NOT_FOUND,
+            solutions: [
+                'Periksa apakah menu item dengan ID tersebut ada',
+                'Gunakan wp menu item list untuk melihat daftar menu items'
+            ]
         );
     }
 
     public static function parentNotFound(int $parentId, int $menuId): self
     {
         return new self(
-            sprintf("Parent item tidak ditemukan: ID %d di menu %d", $parentId, $menuId),
-            null,
-            $parentId,
-            null,
-            ['menu_id' => $menuId],
-            self::PARENT_NOT_FOUND
+            message: sprintf("Parent item tidak ditemukan: ID %d di menu %d", $parentId, $menuId),
+            context: [
+                'parent_id' => $parentId,
+                'menu_id' => $menuId,
+            ],
+            code: self::PARENT_NOT_FOUND,
+            solutions: [
+                'Periksa apakah parent item masih ada',
+                'Gunakan ID parent yang valid atau null untuk top-level item'
+            ]
         );
     }
 
     public static function invalidParent(int $itemId): self
     {
         return new self(
-            sprintf("Item ID %d bukan parent item yang valid", $itemId),
-            $itemId,
-            null,
-            null,
-            [],
-            self::INVALID_PARENT
+            message: sprintf("Item ID %d bukan parent item yang valid", $itemId),
+            context: [
+                'item_id' => $itemId,
+            ],
+            code: self::INVALID_PARENT,
+            solutions: [
+                'Pastikan parent item bukan child dari item yang akan dibuat',
+                'Hindari circular reference dalam menu hierarchy'
+            ]
         );
     }
 
     public static function duplicateTitle(string $title, int $parentId): self
     {
         return new self(
-            sprintf("Menu item dengan title '%s' sudah ada di parent %d", $title, $parentId),
-            null,
-            $parentId,
-            $title,
-            [],
-            self::DUPLICATE_TITLE
+            message: sprintf("Menu item dengan title '%s' sudah ada di parent %d", $title, $parentId),
+            context: [
+                'item_title' => $title,
+                'parent_id' => $parentId,
+            ],
+            code: self::DUPLICATE_TITLE,
+            solutions: [
+                'Gunakan title yang berbeda',
+                'Update menu item yang sudah ada'
+            ]
         );
     }
 
     public static function createFailed(string $title, string $error = ''): self
     {
+        $message = sprintf("Gagal membuat menu item: %s", $title);
+        if ($error) {
+            $message .= ". Error: " . $error;
+        }
+
         return new self(
-            sprintf("Gagal membuat menu item: %s. Error: %s", $title, $error),
-            null,
-            null,
-            $title,
-            ['error' => $error],
-            self::CREATE_FAILED
+            message: $message,
+            context: [
+                'item_title' => $title,
+                'error' => $error,
+            ],
+            code: self::CREATE_FAILED,
+            solutions: [
+                'Periksa permission user',
+                'Pastikan data menu item valid'
+            ]
+        );
+    }
+
+    public static function updateFailed(int $itemId, string $error = ''): self
+    {
+        $message = sprintf("Gagal mengupdate menu item ID: %d", $itemId);
+        if ($error) {
+            $message .= ". Error: " . $error;
+        }
+
+        return new self(
+            message: $message,
+            context: [
+                'item_id' => $itemId,
+                'error' => $error,
+            ],
+            code: self::UPDATE_FAILED,
+            solutions: [
+                'Periksa apakah menu item masih ada',
+                'Periksa permission user'
+            ]
+        );
+    }
+
+    public static function deleteFailed(int $itemId, string $error = ''): self
+    {
+        $message = sprintf("Gagal menghapus menu item ID: %d", $itemId);
+        if ($error) {
+            $message .= ". Error: " . $error;
+        }
+
+        return new self(
+            message: $message,
+            context: [
+                'item_id' => $itemId,
+                'error' => $error,
+            ],
+            code: self::DELETE_FAILED,
+            solutions: [
+                'Periksa apakah menu item memiliki child items',
+                'Periksa permission user'
+            ]
         );
     }
 
     public static function invalidType(string $type, array $allowedTypes): self
     {
         return new self(
-            sprintf(
+            message: sprintf(
                 "Tipe menu item tidak valid: %s. Tipe yang diperbolehkan: %s",
                 $type,
                 implode(', ', $allowedTypes)
             ),
-            null,
-            null,
-            null,
-            ['type' => $type, 'allowed_types' => $allowedTypes],
-            self::INVALID_TYPE
+            context: [
+                'type' => $type,
+                'allowed_types' => $allowedTypes,
+            ],
+            code: self::INVALID_TYPE,
+            solutions: [
+                'Gunakan salah satu tipe: ' . implode(', ', $allowedTypes),
+                'Periksa dokumentasi untuk tipe menu item yang valid'
+            ]
         );
     }
 
-    public function getItemId(): ?int
+    public static function invalidPosition(int $position): self
     {
-        return $this->itemId;
-    }
-
-    public function getParentId(): ?int
-    {
-        return $this->parentId;
-    }
-
-    public function getItemTitle(): ?string
-    {
-        return $this->itemTitle;
+        return new self(
+            message: sprintf("Posisi menu item tidak valid: %d", $position),
+            context: [
+                'position' => $position,
+            ],
+            code: self::INVALID_POSITION,
+            solutions: [
+                'Gunakan posisi >= 0',
+                'Posisi akan otomatis disesuaikan jika melebihi jumlah items'
+            ]
+        );
     }
 }

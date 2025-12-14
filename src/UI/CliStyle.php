@@ -59,6 +59,45 @@ final class CliStyle
         WP_CLI::log("");
     }
 
+    public function listLabel(array $items, array $fields): void
+    {
+        foreach ($fields as $i => $label) {
+            if (isset($items[$i])) {
+                WP_CLI::log(
+                    sprintf("🏮 %s : %s", $this->highlightText((string) $label), $this->textGreen((string) $items[$i], '%g'))
+                );
+            }
+        }
+    }
+
+    public function logFatal(...$messages): void
+    {
+        WP_CLI::line(
+            sprintf("%s ❌ %s", WP_CLI::colorize("%R[FATAL]%n"), implode(' ', $messages))
+        );
+    }
+
+    public function logInfo(...$messages): void
+    {
+        WP_CLI::line(
+            sprintf("%s ℹ️   %s", WP_CLI::colorize("%B[INFO]%n"), implode(' ', $messages))
+        );
+    }
+
+    public function logWarning(...$messages): void
+    {
+        WP_CLI::line(
+            sprintf("%s ⚠️  %s", WP_CLI::colorize("%Y[WARNING]%n"), implode(' ', $messages))
+        );
+    }
+
+    public function logError(...$messages): void
+    {
+        WP_CLI::line(
+            sprintf("%s ❌ %s", WP_CLI::colorize("%M[ERROR]%n"), implode(' ', $messages))
+        );
+    }
+
     public function textGreen(string $message, string $color = '%G'): string
     {
         return WP_CLI::colorize("{$color}{$message}%n");

@@ -42,7 +42,7 @@ final class WpCliExceptionHandler implements HandlerExceptionInterface
             foreach ($contexts as $key => $value) {
                 $message .= self::LINE;
                 $message .= self::TAB . $key . ':';
-                $message .= self::LINE . self::TAB . self::SPACE . $io->highlightText($value);
+                $message .= self::LINE . self::TAB . self::SPACE . $io->highlightText((string) $value);
             }
         }
 
@@ -53,7 +53,7 @@ final class WpCliExceptionHandler implements HandlerExceptionInterface
             $message .= self::TAB . $io->textGreen('Saran :');
 
             foreach ($solutions as $solution) {
-                $message .= self::LINE . self::TAB . self::SPACE . "{$io->textGreen("✔ {$solution}", '%g')}";
+                $message .= self::LINE . self::TAB . self::SPACE . "{$io->textGreen((string)$solution, '%g')}";
             }
         }
 

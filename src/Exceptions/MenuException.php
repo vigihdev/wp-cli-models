@@ -13,77 +13,111 @@ final class MenuException extends WpCliModelException
     public const UPDATE_FAILED = 1005;
     public const DELETE_FAILED = 1006;
 
-    private ?string $menuIdentifier;
-    private ?int $menuId;
-
-    public function __construct(
-        string $message,
-        ?string $menuIdentifier = null,
-        ?int $menuId = null,
-        array $context = [],
-        int $code = 0,
-        \Throwable $previous = null
-    ) {
-        $this->menuIdentifier = $menuIdentifier;
-        $this->menuId = $menuId;
-
-        $context['menu_identifier'] = $menuIdentifier;
-        $context['menu_id'] = $menuId;
-
-        parent::__construct($message, $context, $code, $previous);
-    }
-
     public static function notFound(string $identifier): self
     {
         return new self(
-            sprintf("Menu tidak ditemukan: %s", $identifier),
-            $identifier,
-            null,
-            [],
-            self::NOT_FOUND
+            message: sprintf("Menu tidak ditemukan: %s", $identifier),
+            context: [
+                'menu_identifier' => $identifier,
+            ],
+            code: self::NOT_FOUND,
+            solutions: [
+                'Periksa apakah menu dengan identifier tersebut ada',
+                'Gunakan wp menu list untuk melihat daftar menu'
+            ]
         );
     }
 
     public static function invalidLocation(string $location): self
     {
         return new self(
-            sprintf("Menu location tidak valid: %s", $location),
-            $location,
-            null,
-            [],
-            self::INVALID_LOCATION
+            message: sprintf("Menu location tidak valid: %s", $location),
+            context: [
+                'location' => $location,
+            ],
+            code: self::INVALID_LOCATION,
+            solutions: [
+                'Gunakan location yang terdaftar di theme',
+                'Periksa available locations dengan get_registered_nav_menus()'
+            ]
         );
     }
 
     public static function alreadyExists(string $name): self
     {
         return new self(
-            sprintf("Menu sudah ada dengan nama: %s", $name),
-            $name,
-            null,
-            [],
-            self::ALREADY_EXISTS
+            message: sprintf("Menu sudah ada dengan nama: %s", $name),
+            context: [
+                'menu_name' => $name,
+            ],
+            code: self::ALREADY_EXISTS,
+            solutions: [
+                'Gunakan nama menu yang berbeda',
+                'Update menu yang sudah ada'
+            ]
         );
     }
 
     public static function createFailed(string $name, string $error = ''): self
     {
+        $message = sprintf("Gagal membuat menu: %s", $name);
+        if ($error) {
+            $message .= ". Error: " . $error;
+        }
+
         return new self(
-            sprintf("Gagal membuat menu: %s. Error: %s", $name, $error),
-            $name,
-            null,
-            ['error' => $error],
-            self::CREATE_FAILED
+            message: $message,
+            context: [
+                'menu_name' => $name,
+                'error' => $error,
+            ],
+            code: self::CREATE_FAILED,
+            solutions: [
+                'Periksa permission user',
+                'Pastikan nama menu valid'
+            ]
         );
     }
 
-    public function getMenuIdentifier(): ?string
+    public static function updateFailed(string $identifier, string $error = ''): self
     {
-        return $this->menuIdentifier;
+        $message = sprintf("Gagal mengupdate menu: %s", $identifier);
+        if ($error) {
+            $message .= ". Error: " . $error;
+        }
+
+        return new self(
+            message: $message,
+            context: [
+                'menu_identifier' => $identifier,
+                'error' => $error,
+            ],
+            code: self::UPDATE_FAILED,
+            solutions: [
+                'Periksa apakah menu masih ada',
+                'Periksa permission user'
+            ]
+        );
     }
 
-    public function getMenuId(): ?int
+    public static function deleteFailed(string $identifier, string $error = ''): self
     {
-        return $this->menuId;
+        $message = sprintf("Gagal menghapus menu: %s", $identifier);
+        if ($error) {
+            $message .= ". Error: " . $error;
+        }
+
+        return new self(
+            message: $message,
+            context: [
+                'menu_identifier' => $identifier,
+                'error' => $error,
+            ],
+            code: self::DELETE_FAILED,
+            solutions: [
+                'Periksa apakah menu sedang digunakan',
+                'Periksa permission user'
+            ]
+        );
     }
 }
