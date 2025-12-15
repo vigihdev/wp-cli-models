@@ -6,7 +6,9 @@ namespace Vigihdev\WpCliModels\DTOs\Entities\Post;
 
 use InvalidArgumentException;
 use Vigihdev\WpCliModels\Contracts\Entities\Post\PostEntityInterface;
+use Vigihdev\WpCliModels\DTOs\Entities\Author\UserEntityDto;
 use Vigihdev\WpCliModels\DTOs\Entities\BaseEntityDto;
+use Vigihdev\WpCliModels\DTOs\Entities\Terms\TermEntityDto;
 
 final class PostEntityDto extends BaseEntityDto implements PostEntityInterface
 {
@@ -238,5 +240,34 @@ final class PostEntityDto extends BaseEntityDto implements PostEntityInterface
             commentCount: (int) ($data['comment_count'] ?? 0),
             filter: $data['filter'] ?? ''
         );
+    }
+
+    /**
+     *
+     * @return UserEntityDto|null
+     */
+    public function getAuthors(): ?UserEntityDto
+    {
+        $data = get_user($this->author)?->data;
+        return $data ? UserEntityDto::fromQuery($data) : null;
+    }
+
+    /**
+     *
+     * @return TermEntityDto[]
+     */
+    public function getTerms(array $taxonomys = ['category']): array
+    {
+
+        $terms = get_terms([
+            'taxonomy' => $taxonomys,
+            'post_id' => $this->getId(),
+        ]);
+
+        $items = [];
+        foreach ($terms as $term) {
+            $items[] = TermEntityDto::fromQuery($term);
+        }
+        return $items;
     }
 }

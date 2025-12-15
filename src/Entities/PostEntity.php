@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Vigihdev\WpCliModels\Entities;
 
-use Vigihdev\Support\Collection;
-use Vigihdev\WpCliModels\DTOs\Entities\Post\PostEntityDto;
 use WP_Post;
 use WP_Error;
 use WP_Query;
+use Vigihdev\Support\Collection;
+use Vigihdev\WpCliModels\DTOs\Entities\Post\PostEntityDto;
 
 final class PostEntity
 {
@@ -64,19 +64,17 @@ final class PostEntity
      * Mencari post berdasarkan ID
      *
      * @param int $postId ID post yang akan dicari
-     * @param string $output Tipe output (OBJECT, ARRAY_A, ARRAY_N)
-     * @param string $filter Type filter
-     * @return WP_Post|null Instance WP_Post jika post ditemukan, null jika tidak
+     * @return PostEntityDto|null Instance PostEntityDto jika post ditemukan, null jika tidak
      */
-    public static function findById(int $postId, string $output = \OBJECT, string $filter = 'raw'): ?WP_Post
+    public static function findById(int $postId): ?PostEntityDto
     {
-        $post = get_post($postId, $output, $filter);
+        $post = get_post($postId);
 
         if (!$post || is_wp_error($post)) {
             return null;
         }
 
-        return $post;
+        return PostEntityDto::fromQuery($post);
     }
 
     /**
@@ -189,7 +187,7 @@ final class PostEntity
      * @param array $postData Data post yang akan dibuat
      * @return int|WP_Error ID post yang dibuat atau WP_Error jika gagal
      */
-    public static function create(array $postData)
+    public static function create(array $postData): int|WP_Error
     {
         return wp_insert_post($postData, true);
     }
@@ -201,7 +199,7 @@ final class PostEntity
      * @param array $postData Data post yang akan diupdate
      * @return int|WP_Error ID post yang diupdate atau WP_Error jika gagal
      */
-    public static function update(int $postId, array $postData)
+    public static function update(int $postId, array $postData): int|WP_Error
     {
         $postData['ID'] = $postId;
         return wp_update_post($postData, true);
@@ -212,9 +210,9 @@ final class PostEntity
      *
      * @param int $postId ID post yang akan dihapus
      * @param bool $forceDelete Apakah akan dihapus permanen (default: false)
-     * @return mixed Hasil penghapusan post
+     * @return WP_Post|false|null Instance WP_Post jika post dihapus, false jika gagal, null jika post tidak ada
      */
-    public static function delete(int $postId, bool $forceDelete = false)
+    public static function delete(int $postId, bool $forceDelete = false): WP_Post|false|null
     {
         return wp_delete_post($postId, $forceDelete);
     }

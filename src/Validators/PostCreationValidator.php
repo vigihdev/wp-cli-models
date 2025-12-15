@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Vigihdev\WpCliModels\Validators;
 
+use Vigihdev\WpCliModels\Entities\PostEntity;
 use Vigihdev\WpCliModels\Exceptions\PostCreationException;
 use WP_Post;
 
@@ -37,13 +38,24 @@ final class PostCreationValidator
         return $this;
     }
 
-    public function mustHaveUniqueTitle(string $title, string $postType = 'post'): self
+    public function mustHaveUniqueTitle(string $title): self
     {
-        $existingPost = get_page_by_title($title, OBJECT, $postType);
 
-        if ($existingPost instanceof WP_Post) {
-            throw PostCreationException::duplicatePostTitle($title, $postType);
+        if (PostEntity::existsByTitle($title)) {
+            $post = PostEntity::findByTitle($title);
+            throw PostCreationException::duplicatePostTitle($title, $post->post_type);
         }
+        return $this;
+    }
+
+    public function mustHaveUniqueName(string $titleOrSlug): self
+    {
+
+        if (PostEntity::existsByName($titleOrSlug)) {
+            $post = PostEntity::findByName($titleOrSlug);
+            throw PostCreationException::duplicatePostTitle($titleOrSlug, $post->post_type);
+        }
+
         return $this;
     }
 
