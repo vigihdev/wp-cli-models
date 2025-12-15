@@ -41,8 +41,9 @@ final class WpCliExceptionHandler implements HandlerExceptionInterface
         if (is_array($contexts) && count($contexts) > 0) {
             foreach ($contexts as $key => $value) {
                 $message .= self::LINE;
-                $message .= self::TAB . $key . ':';
-                $message .= self::LINE . self::TAB . self::SPACE . $io->highlightText((string) $value);
+                $message .= self::TAB . $key . ' : ';
+                $message .= $io->highlightText((string) $value);
+                // $message .= self::LINE . self::TAB . self::SPACE . $io->highlightText((string) $value);
             }
         }
 

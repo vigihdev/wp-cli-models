@@ -12,4 +12,6 @@ final class MinimalTheme
         private readonly CliStyle $io,
         private readonly string $section,
     ) {}
+
+    private function dryRun(): void {}
 }
