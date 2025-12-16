@@ -4,12 +4,67 @@ declare(strict_types=1);
 
 namespace Vigihdev\WpCliModels\Entities;
 
+use Vigihdev\Support\Collection;
 use Vigihdev\WpCliModels\DTOs\Entities\Terms\TermEntityDto;
 use WP_Term;
 use WP_Error;
 
 final class TermEntity
 {
+    /**
+     *
+     * @return Collection<TermEntityDto>
+     */
+    public static function findAll(): Collection
+    {
+        $terms = get_terms();
+
+        if (!$terms || is_wp_error($terms)) {
+            return new Collection([]);
+        }
+
+        $data = array_map(fn($term) => TermEntityDto::fromQuery($term), $terms);
+        return new Collection($data);
+    }
+
+    /**
+     * Mencari term berdasarkan taxonomy
+     *
+     * @param string $name Nama term yang akan dicari
+     * @return Collection<TermEntityDto> Koleksi term yang ditemukan
+     */
+    public static function getName(string $name): Collection
+    {
+        return self::findAll()
+            ->filter(fn($term) => strtolower($term->getName()) === strtolower($name));
+    }
+
+    /**
+     * Mencari term berdasarkan slug
+     *
+     * @param string $slug
+     * @return Collection<TermEntityDto>
+     */
+    public static function getSlug(string $slug): Collection
+    {
+        return self::findAll()
+            ->filter(fn($term) => strtolower($term->getSlug()) === strtolower($slug));
+    }
+
+    /**
+     * Mencari term berdasarkan ID
+     *
+     * @param int $termId ID term yang akan dicari
+     * @return TermEntityDto|null Instance WP_Term jika term ditemukan, null jika tidak
+     */
+    public static function getId(int $termId): ?TermEntityDto
+    {
+        return self::findAll()
+            ->filter(fn($term) => $term->getTermId() === $termId)
+            ?->first();
+    }
+
+
     /**
      * Mencari term berdasarkan ID
      *
@@ -104,10 +159,10 @@ final class TermEntity
      * Memeriksa apakah term dengan ID tertentu ada
      *
      * @param int $termId ID term yang akan diperiksa
-     * @param string|null $taxonomy Nama taxonomy tempat memeriksa term (opsional)
+     * @param string $taxonomy Nama taxonomy tempat memeriksa term
      * @return bool True jika term ditemukan, false jika tidak
      */
-    public static function exists(int $termId, ?string $taxonomy = null): bool
+    public static function exists(int $termId, string $taxonomy): bool
     {
         $term = get_term($termId, $taxonomy);
 

@@ -69,7 +69,10 @@ final class PostCreationException extends WpCliModelException
 
         return new self(
             message: $message,
-            context: ['post_id' => $postId, 'post_data' => $safePostData],
+            context: [
+                'post_id' => $postId,
+                'post_data' => $safePostData
+            ],
             code: self::CODE_UPDATE_FAILED,
             solutions: [
                 'Periksa apakah post dengan ID tersebut tersedia',
@@ -132,6 +135,19 @@ final class PostCreationException extends WpCliModelException
                 'Gunakan judul yang berbeda',
                 'Periksa apakah post dengan judul ini sudah ada',
                 'Tambahkan sufiks atau prefiks untuk membedakan'
+            ]
+        );
+    }
+
+    public static function emptyPostTitle(): self
+    {
+        return new self(
+            message: 'Post title cannot be empty',
+            context: [],
+            code: self::CODE_INSERT_FAILED,
+            solutions: [
+                'Masukkan judul post yang valid',
+                'Pastikan field title tidak kosong'
             ]
         );
     }

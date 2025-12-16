@@ -4,54 +4,72 @@ declare(strict_types=1);
 
 namespace Vigihdev\WpCliModels\Entities;
 
+use Vigihdev\Support\Collection;
+use Vigihdev\WpCliModels\DTOs\Entities\Author\UserEntityDto;
 use WP_User;
 
 final class UserEntity
 {
 
     /**
-     * Mencari user berdasarkan ID author
+     * Mencari user berdasarkan ID atau username/email
      *
-     * @param int $id ID user yang akan dicari
-     * @return WP_User|null Instance WP_User jika user ditemukan, null jika tidak
+     * @param int|string $user ID user atau username/email
+     * @return UserEntityDto|null Instance UserEntityDto jika user ditemukan, null jika tidak
      */
-    public static function findByAuthorId(int $id): ?WP_User
+    public static function get(int|string $user): ?UserEntityDto
     {
-        $user = get_user_by('ID', $id);
-
-        if (!$user) {
-            return null;
+        if (is_int($user) || is_numeric($user)) {
+            $user_ = get_user_by('ID', (int) $user);
+            return $user_ ? UserEntityDto::fromQuery($user_->data) : null;
         }
 
-        return $user;
+        if (is_string($user)) {
+            if (filter_var($user, FILTER_VALIDATE_EMAIL)) {
+                $user_ = get_user_by('email', $user);
+                return $user_ ? UserEntityDto::fromQuery($user_->data) : null;
+            }
+            $user_ = get_user_by('username', $user);
+            return $user_ ? UserEntityDto::fromQuery($user_->data) : null;
+        }
+
+        return null;
     }
 
     /**
-     * Mengambil satu user secara acak atau berdasarkan kriteria default
-     *
-     * @return WP_User Instance WP_User jika user ditemukan, null jika tidak ada user
+     * Mengambil semua user dalam bentuk array DTO
+     * 
+     * @return Collection<UserEntityDto> Array dari UserEntityDto  
      */
-    public static function findOne(): WP_User
+    public static function findAll(): Collection
     {
-        $users = get_users([
-            'number' => 1,
-            'orderby' => 'registered',
-            'order' => 'ASC'
-        ]);
+        $users = array_map(
+            fn(WP_User $user) => UserEntityDto::fromQuery($user->data),
+            get_users()
+        );
 
-        return $users[0];
+        return new Collection($users);
     }
 
     /**
-     * Memeriksa apakah user dengan ID tertentu ada dalam sistem
+     * Mengambil satu user berdasarkan ID atau username/email
+     * 
+     * @param int|string $user ID user atau username/email
+     * @return UserEntityDto|null Instance UserEntityDto jika user ditemukan, null jika tidak
+     */
+    public static function findOne(): ?UserEntityDto
+    {
+        return self::findAll()?->first() ?? null;
+    }
+
+    /**
+     * Memeriksa apakah user dengan ID atau username/email tertentu ada dalam sistem
      *
-     * @param int $id ID user yang akan diperiksa
+     * @param int|string $user ID user atau username/email
      * @return bool True jika user ditemukan, false jika tidak
      */
-    public static function hasExistUserId(int $id): bool
+    public static function exists(int|string $user): bool
     {
-        $user = get_user_by('ID', $id);
-
-        return $user !== false;
+        return self::get($user) !== null;
     }
 }

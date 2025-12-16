@@ -48,6 +48,14 @@ final class PostCreationValidator
         return $this;
     }
 
+    public function mustNotEmptyTitle(string $title): self
+    {
+        if (empty(trim($title))) {
+            throw PostCreationException::emptyPostTitle();
+        }
+        return $this;
+    }
+
     public function mustHaveUniqueName(string $titleOrSlug): self
     {
 
@@ -73,16 +81,25 @@ final class PostCreationValidator
     {
         // Validasi dasar untuk data post
         if (!empty($this->postData)) {
-            if (isset($this->postData['post_author']) && !get_user_by('ID', $this->postData['post_author'])) {
-                throw PostCreationException::invalidAuthor((int) $this->postData['post_author']);
+            $post_type = isset($this->postData['post_type']) ? $this->postData['post_type'] : 'post';
+            $post_title = isset($this->postData['post_title']) ? $this->postData['post_title'] : null;
+            $post_name = isset($this->postData['post_name']) ? $this->postData['post_name'] : null;
+            $post_status = isset($this->postData['post_status']) ? $this->postData['post_status'] : null;
+            $post_author = isset($this->postData['post_author']) ? $this->postData['post_author'] : null;
+
+            if ($post_author && !get_user_by('ID', $post_author)) {
+                throw PostCreationException::invalidAuthor((int) $post_author);
             }
 
-            if (isset($this->postData['post_title']) && isset($this->postData['post_type'])) {
-                $this->mustHaveUniqueTitle($this->postData['post_title'], $this->postData['post_type'] ?? 'post');
+            if ($post_title && $post_type) {
+                $this->mustHaveUniqueTitle($post_title, $post_type);
             }
 
-            if (isset($this->postData['post_status'])) {
-                $this->mustHaveValidStatus($this->postData['post_status']);
+            if ($post_status) {
+                $this->mustHaveValidStatus($post_status);
+            }
+            if ($post_name && $post_type) {
+                $this->mustHaveUniqueName($post_name, $post_type);
             }
         }
 

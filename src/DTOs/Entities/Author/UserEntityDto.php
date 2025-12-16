@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Vigihdev\WpCliModels\DTOs\Entities\Author;
 
-use InvalidArgumentException;
 use Vigihdev\WpCliModels\DTOs\Entities\BaseEntityDto;
+use InvalidArgumentException;
 use Vigihdev\WpCliModels\Contracts\Entities\Author\UserEntityInterface;
 
 final class UserEntityDto extends BaseEntityDto implements UserEntityInterface
@@ -127,6 +127,19 @@ final class UserEntityDto extends BaseEntityDto implements UserEntityInterface
 
         if (is_object($data)) {
             $data = get_object_vars($data);
+            $data = array_change_key_case($data, CASE_LOWER);
+            foreach ($data as $key => $value) {
+                if (! is_string($key)) {
+                    continue;
+                }
+
+                if (!str_starts_with($key, 'user_')) {
+                    continue;
+                }
+
+                $key = str_replace('user_', '', $key);
+                $data[$key] = (string) $value;
+            }
         }
 
         return self::fromArray($data);
@@ -142,19 +155,19 @@ final class UserEntityDto extends BaseEntityDto implements UserEntityInterface
     public static function fromArray(array $data): static
     {
 
-        if (!isset($data['ID'])) {
+        if (!isset($data['id'])) {
             throw new InvalidArgumentException('ID is required');
         }
 
         return new static(
-            id: (int) $data['ID'],
-            email: $data['user_email'] ?? '',
-            firstname: $data['user_firstname'] ?? '',
-            lastname: $data['user_lastname'] ?? '',
-            level: $data['user_level'] ?? '',
-            nicename: $data['user_nicename'] ?? '',
-            status: $data['user_status'] ?? '',
-            url: $data['user_url'] ?? ''
+            id: (int) $data['id'],
+            email: $data['email'] ?? '',
+            firstname: $data['firstname'] ?? '',
+            lastname: $data['lastname'] ?? '',
+            level: $data['level'] ?? '',
+            nicename: $data['nicename'] ?? '',
+            status: $data['status'] ?? '',
+            url: $data['url'] ?? ''
         );
     }
 }

@@ -66,7 +66,7 @@ final class MenuItemEntity
         return wp_update_nav_menu_item($menuId, 0, $data);
     }
 
-    public static function update(int $id, array $data) {}
+    private static function update(int $id, array $data) {}
 
     /**
      * Memeriksa apakah menu item dengan tipe dan judul tertentu ada
