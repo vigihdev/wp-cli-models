@@ -51,10 +51,10 @@ final class CliStyle
     public function summary(...$messages): void
     {
         WP_CLI::log("");
-        WP_CLI::log("📊 Summary:");
-        WP_CLI::log("──────────────");
+        WP_CLI::log("📊 {$this->textGreen("Summary:")}");
+        WP_CLI::log("");
         foreach ($messages as $message) {
-            WP_CLI::log("{$message}");
+            WP_CLI::log("{$this->textGreen($message, '%g')}");
         }
         WP_CLI::log("");
     }
@@ -315,7 +315,6 @@ final class CliStyle
      */
     public function definitionList(array $items, bool $hr = false): void
     {
-        WP_CLI::log("");
         if ($hr) {
             $this->hr();
         }
@@ -338,7 +337,6 @@ final class CliStyle
         if ($hr) {
             $this->hr();
         }
-        WP_CLI::log("");
     }
 
     /**

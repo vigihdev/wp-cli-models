@@ -39,7 +39,7 @@ final class CategoryEntityDto extends BaseEntityDto implements CategoryEntityInt
     /**
      * {@inheritDoc}
      */
-    public function termId(): int
+    public function getTermId(): int
     {
         return $this->termId;
     }
@@ -47,7 +47,7 @@ final class CategoryEntityDto extends BaseEntityDto implements CategoryEntityInt
     /**
      * {@inheritDoc}
      */
-    public function name(): string
+    public function getName(): string
     {
         return $this->name;
     }
@@ -55,7 +55,7 @@ final class CategoryEntityDto extends BaseEntityDto implements CategoryEntityInt
     /**
      * {@inheritDoc}
      */
-    public function slug(): string
+    public function getSlug(): string
     {
         return $this->slug;
     }
@@ -63,7 +63,7 @@ final class CategoryEntityDto extends BaseEntityDto implements CategoryEntityInt
     /**
      * {@inheritDoc}
      */
-    public function termGroup(): int
+    public function getTermGroup(): int
     {
         return $this->termGroup;
     }
@@ -71,7 +71,7 @@ final class CategoryEntityDto extends BaseEntityDto implements CategoryEntityInt
     /**
      * {@inheritDoc}
      */
-    public function parent(): int
+    public function getParent(): int
     {
         return $this->parent;
     }
@@ -79,12 +79,12 @@ final class CategoryEntityDto extends BaseEntityDto implements CategoryEntityInt
     /**
      * {@inheritDoc}
      */
-    public function count(): int
+    public function getCount(): int
     {
         return $this->count;
     }
 
-    public function filter(): string
+    public function getFilter(): string
     {
         return $this->filter;
     }
@@ -92,7 +92,7 @@ final class CategoryEntityDto extends BaseEntityDto implements CategoryEntityInt
     /**
      * {@inheritDoc}
      */
-    public function catId(): int
+    public function getCatId(): int
     {
         return $this->catId;
     }
@@ -100,7 +100,7 @@ final class CategoryEntityDto extends BaseEntityDto implements CategoryEntityInt
     /**
      * {@inheritDoc}
      */
-    public function categoryCount(): int
+    public function getCategoryCount(): int
     {
         return $this->categoryCount;
     }
@@ -108,7 +108,7 @@ final class CategoryEntityDto extends BaseEntityDto implements CategoryEntityInt
     /**
      * {@inheritDoc}
      */
-    public function categoryDescription(): string
+    public function getCategoryDescription(): string
     {
         return $this->categoryDescription;
     }
@@ -116,7 +116,7 @@ final class CategoryEntityDto extends BaseEntityDto implements CategoryEntityInt
     /**
      * {@inheritDoc}
      */
-    public function catName(): string
+    public function getCatName(): string
     {
         return $this->catName;
     }
@@ -124,7 +124,7 @@ final class CategoryEntityDto extends BaseEntityDto implements CategoryEntityInt
     /**
      * {@inheritDoc}
      */
-    public function categoryNicename(): string
+    public function getCategoryNicename(): string
     {
         return $this->categoryNicename;
     }
@@ -132,7 +132,7 @@ final class CategoryEntityDto extends BaseEntityDto implements CategoryEntityInt
     /**
      * {@inheritDoc}
      */
-    public function categoryParent(): int
+    public function getCategoryParent(): int
     {
         return $this->categoryParent;
     }
@@ -140,12 +140,12 @@ final class CategoryEntityDto extends BaseEntityDto implements CategoryEntityInt
     /**
      * {@inheritDoc}
      */
-    public function description(): string
+    public function getDescription(): string
     {
         return $this->description;
     }
 
-    public function termTaxonomyId(): int
+    public function getTermTaxonomyId(): int
     {
         return $this->termTaxonomyId;
     }
@@ -153,7 +153,7 @@ final class CategoryEntityDto extends BaseEntityDto implements CategoryEntityInt
     /**
      * {@inheritDoc}
      */
-    public function taxonomy(): string
+    public function getTaxonomy(): string
     {
         return $this->taxonomy;
     }

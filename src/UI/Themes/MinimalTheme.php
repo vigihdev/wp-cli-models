@@ -13,5 +13,7 @@ final class MinimalTheme
         private readonly string $section,
     ) {}
 
+    private function renderTitle(): void {}
     private function dryRun(): void {}
+    private function viewDetail(array $items, array $fields): void {}
 }
