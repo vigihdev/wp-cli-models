@@ -42,6 +42,7 @@ final class WpCliExceptionHandler implements HandlerExceptionInterface
             foreach ($contexts as $key => $value) {
                 $message .= self::LINE;
                 $message .= self::TAB . $key . ' : ';
+                $value = is_array($value) ? implode(', ', $value) : $value;
                 $message .= $io->highlightText((string) $value);
                 // $message .= self::LINE . self::TAB . self::SPACE . $io->highlightText((string) $value);
             }

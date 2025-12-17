@@ -4,38 +4,47 @@ declare(strict_types=1);
 
 namespace Vigihdev\WpCliModels\Validators;
 
+use Vigihdev\WpCliModels\Entities\MenuItemEntity;
+use Vigihdev\WpCliModels\Entities\TermRelationships;
+use Vigihdev\WpCliModels\Enums\PostType;
 use Vigihdev\WpCliModels\Exceptions\MenuItemException;
+use Vigihdev\WpCliModels\Exceptions\PostException;
 
 final class MenuItemValidator
 {
     public function __construct(
-        private readonly int|string $identifier,
-        private readonly ?string $taxonomy = null
+        private readonly int|string $postId,
     ) {}
 
-    public static function validate(int|string $identifier, ?string $taxonomy = null): static
+    public static function validate(int|string $postId): static
     {
-        return new self($identifier, $taxonomy);
+        return new self($postId);
     }
 
     /**
-     * Validasi bahwa menu item dengan ID tertentu ada
+     * Memvalidasi apakah menu item dengan ID tertentu ada
+     *  dan memiliki relasi term taxonomy yang valid
      * 
+     * @return self 
      * @throws MenuItemException
      */
     public function mustExist(): self
     {
-        $itemId = is_numeric($this->identifier) ? (int) $this->identifier : 0;
-
-        if ($itemId <= 0) {
-            throw MenuItemException::notFound($itemId);
-        }
+        $postId = $this->postId;
 
         // Cek apakah menu item ada di database
-        $menuItem = wp_setup_nav_menu_item(get_post($itemId));
+        $post = get_post($postId);
+        if (!$post) {
+            throw PostException::notFound($postId);
+        }
 
-        if (!$menuItem || $menuItem->post_type !== 'nav_menu_item') {
-            throw MenuItemException::notFound($itemId);
+        // Cek apakah menu item memiliki relasi term taxonomy yang valid
+        foreach (TermRelationships::findByPostId($postId) as $relation) {
+            $postDto = $relation->getPostDto();
+            if ($postDto->getType() !== PostType::NAV_MENU_ITEM->value) {
+                throw PostException::invalidPostType($postDto->getType(), [PostType::NAV_MENU_ITEM->value]);
+            }
+            $term = $relation->getTermDto();
         }
 
         return $this;

@@ -4,8 +4,111 @@ declare(strict_types=1);
 
 namespace Vigihdev\WpCliModels\Entities;
 
+use Generator;
+use Vigihdev\WpCliModels\DTOs\Entities\Post\PostEntityDto;
+use Vigihdev\WpCliModels\DTOs\Entities\Terms\TermEntityDto;
+use WP_Post;
+use WP_Term;
+
+/**
+ * Term Relationships Entity 
+ * 
+ * @property-read int $object_id Object id
+ * @property-read int $term_taxonomy_id Term taxonomy id
+ * @property-read int $term_order Term order
+ * 
+ * @method PostEntityDto getPostDto(): PostEntityDto 
+ * @method TermEntityDto getTermDto(): TermEntityDto 
+ * @method int getObjectId(): int 
+ * @method int getTermTaxonomyId(): int 
+ * @method int getTermOrder(): int
+ * 
+ */
 final class TermRelationships
 {
+
+    public function __construct(
+        private readonly int $object_id = 0,
+        private readonly int $term_taxonomy_id = 0,
+        private readonly int $term_order = 0
+    ) {}
+
+    /**
+     * Find term relationships by post id
+     * 
+     * @param int $postId Post id
+     * @return Generator<int, TermRelationships> Term relationships
+     */
+    public static function findByPostId(int $postId): Generator
+    {
+        global $wpdb;
+
+        $results = $wpdb->get_results(
+            $wpdb->prepare(
+                "SELECT object_id, term_taxonomy_id, term_order
+             FROM {$wpdb->term_relationships}
+             WHERE object_id = %d",
+                $postId
+            )
+        );
+
+        foreach ($results as $row) {
+            yield new self(
+                object_id: (int) $row->object_id,
+                term_taxonomy_id: (int) $row->term_taxonomy_id,
+                term_order: (int) $row->term_order
+            );
+        }
+    }
+
+    /**
+     * Find term relationships by term taxonomy id
+     * 
+     * @param int $term_taxonomy_id Term taxonomy id
+     * @return Generator<int, TermRelationships> Term relationships by term taxonomy id
+     */
+    public static function findByTermTaxonomyId(int $term_taxonomy_id): Generator
+    {
+        global $wpdb;
+
+        $results = $wpdb->get_results(
+            $wpdb->prepare(
+                "SELECT object_id, term_taxonomy_id, term_order
+             FROM {$wpdb->term_relationships}
+             WHERE term_taxonomy_id = %d",
+                $term_taxonomy_id
+            )
+        );
+
+        foreach ($results as $row) {
+            yield new self(
+                object_id: (int) $row->object_id,
+                term_taxonomy_id: (int) $row->term_taxonomy_id,
+                term_order: (int) $row->term_order
+            );
+        }
+    }
+
+
+    public function getPostDto(): ?PostEntityDto
+    {
+        $post = get_post($this->object_id);
+        return $post instanceof WP_Post ? PostEntityDto::fromQuery($post) : null;
+    }
+    public function getTermDto(): ?TermEntityDto
+    {
+        $term = get_term_by('term_taxonomy_id', $this->term_taxonomy_id);
+        return $term instanceof WP_Term ? TermEntityDto::fromQuery($term) : null;
+    }
+    public function getTermOrder(): int
+    {
+        return $this->term_order;
+    }
+
+
+    public static function findOne(int $term_taxonomy_id = 0, int $object_id = 0) {}
+
+
     /**
      * Mengambil semua term relationships untuk object tertentu
      *

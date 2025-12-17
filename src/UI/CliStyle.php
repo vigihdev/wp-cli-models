@@ -6,11 +6,29 @@ namespace Vigihdev\WpCliModels\UI;
 
 use cli\progress\Bar;
 use cli\Table;
+use Vigihdev\WpCliModels\UI\Components\AskPreset;
+use Vigihdev\WpCliModels\UI\Components\BlockPreset;
+use Vigihdev\WpCliModels\UI\Components\SummaryPreset;
 use WP_CLI;
 
 final class CliStyle
 {
 
+    public function renderAsk(): AskPreset
+    {
+        return new AskPreset($this);
+    }
+
+    public function renderBlock(string $message): BlockPreset
+    {
+        return new BlockPreset($this, $message);
+    }
+
+    public function renderSummary(array $items)
+    {
+        $summary = new SummaryPreset($this, $items);
+        $summary->render();
+    }
     public function title(string $msg, string $color = '%G'): void
     {
         WP_CLI::log("");

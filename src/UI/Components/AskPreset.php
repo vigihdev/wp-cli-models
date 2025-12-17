@@ -18,6 +18,17 @@ final class AskPreset
         private readonly CliStyle $io,
     ) {}
 
+    public function delete(): void
+    {
+        $io = $this->io;
+        $io->line("📦 Data akan di hapus");
+
+        WP_CLI::confirm(
+            sprintf("🔶 %s", $io->highlightText("Konfirmasi untuk melanjutkan")),
+        );
+    }
+
+
     /**
      * Ask user to choose a preset
      */
