@@ -4,9 +4,7 @@ declare(strict_types=1);
 
 namespace Vigihdev\WpCliModels\UI\Components;
 
-use Vigihdev\Support\Text;
 use Vigihdev\WpCliModels\UI\CliStyle;
-use WP;
 use WP_CLI;
 
 final class BlockPreset

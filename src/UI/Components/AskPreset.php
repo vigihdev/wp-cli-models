@@ -18,11 +18,49 @@ final class AskPreset
         private readonly CliStyle $io,
     ) {}
 
-    public function delete(): void
+    public function delete(string $dataLabel, array $dataItems, array $extraMessages, bool $hr = true): void
     {
         $io = $this->io;
-        $io->line("📦 Data akan di hapus");
+        $io->line("📦 Data {$dataLabel} akan di hapus");
 
+        // Pilihan data yang akan dihapus
+        $io->log('');
+        $io->line($io->textYellow("🟡 {$dataLabel} yang akan dihapus:"));
+        if ($hr) {
+            $io->hr('-', 75);
+        }
+        $itemsDefinitions = [];
+        foreach ($dataItems as $name => $value) {
+            $paddingData = str_repeat(' ', 4);
+            $itemsDefinitions["{$paddingData}{$name}"] = $value;
+        }
+        $io->definitionList($itemsDefinitions);
+        if ($hr) {
+            $io->hr('-', 75);
+        }
+
+        // Peringatan perintah ini akan menghapus data secara permanen
+        $io->log('');
+        if ($hr) {
+            $io->hr('-', 75);
+        }
+        $io->line($io->textYellow("⚠️ PERINGATAN:"));
+        $items = [
+            "• Data akan dihapus PERMANEN",
+            "• Tidak bisa dikembalikan (no undo)",
+        ];
+        $items = array_merge($items, $extraMessages);
+
+        foreach ($items as $item) {
+            $padding = str_repeat(' ', 4);
+            $io->line($io->textWarning("{$padding} {$item}"));
+        }
+        if ($hr) {
+            $io->hr('-', 75);
+        }
+        $io->log('');
+
+        // Konfirmasi perintah
         WP_CLI::confirm(
             sprintf("🔶 %s", $io->highlightText("Konfirmasi untuk melanjutkan")),
         );

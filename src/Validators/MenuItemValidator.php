@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Vigihdev\WpCliModels\Validators;
 
-use Vigihdev\WpCliModels\Entities\MenuItemEntity;
 use Vigihdev\WpCliModels\Entities\TermRelationships;
 use Vigihdev\WpCliModels\Enums\PostType;
 use Vigihdev\WpCliModels\Exceptions\MenuItemException;
@@ -13,10 +12,10 @@ use Vigihdev\WpCliModels\Exceptions\PostException;
 final class MenuItemValidator
 {
     public function __construct(
-        private readonly int|string $postId,
+        private readonly int $postId,
     ) {}
 
-    public static function validate(int|string $postId): static
+    public static function validate(int $postId): static
     {
         return new self($postId);
     }
