@@ -12,12 +12,15 @@ use WP_Term;
 final class MenuEntity
 {
     /**
-     * @return MenuEntityDto|null Instance WP_Term jika menu ditemukan, null jika tidak
+     * Mengambil menu berdasarkan ID, nama slug atau objek menu
+     *
+     * @param int|string $menu ID, nama slug atau objek menu yang akan dicari
+     * @return MenuEntityDto|null Instance MenuEntityDto jika menu ditemukan, null jika tidak
      */
-    public static function get(int|string|WP_Term $menu): ?MenuEntityDto
+    public static function get(int|string $menu): ?MenuEntityDto
     {
         $menu = wp_get_nav_menu_object($menu);
-        return MenuEntityDto::fromQuery($menu) ?: null;
+        return $menu instanceof WP_Term ? MenuEntityDto::fromQuery($menu) : null;
     }
 
 
@@ -34,11 +37,12 @@ final class MenuEntity
     }
 
     /**
+     * Memeriksa apakah menu dengan ID, nama slug atau objek menu tertentu ada  
      * 
-     * @param int|string|WP_Term $menu ID, nama slug atau objek menu yang akan dihapus
+     * @param int|string $menu ID, nama slug atau objek menu yang akan dihapus
      * @return bool True jika menu ditemukan, false jika tidak
      */
-    public static function exists(int|string|WP_Term $menu): bool
+    public static function exists(int|string $menu): bool
     {
         $menu = wp_get_nav_menu_object($menu);
 
@@ -63,10 +67,10 @@ final class MenuEntity
     /**
      * Menghapus menu berdasarkan ID
      *
-     * @param int|string|WP_Term $menu ID, nama slug atau objek menu yang akan dihapus
+     * @param int|string $menu ID, nama slug atau objek menu yang akan dihapus
      * @return bool|WP_Error True jika berhasil dihapus, WP_Error jika terjadi kesalahan, false jika gagal
      */
-    public static function delete(int|string|WP_Term $menu): bool|WP_Error
+    public static function delete(int|string $menu): bool|WP_Error
     {
         return wp_delete_nav_menu($menu);
     }

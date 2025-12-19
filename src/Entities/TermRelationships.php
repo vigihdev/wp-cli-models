@@ -105,8 +105,7 @@ final class TermRelationships
         return $this->term_order;
     }
 
-
-    public static function findOne(int $term_taxonomy_id = 0, int $object_id = 0) {}
+    private static function findOne(int $term_taxonomy_id = 0, int $object_id = 0) {}
 
 
     /**

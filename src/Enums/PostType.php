@@ -9,8 +9,9 @@ enum PostType: string
     case POST = 'post';
     case PAGE = 'page';
     case ATTACHMENT = 'attachment';
-    case REVISION = 'revision';
     case NAV_MENU_ITEM = 'nav_menu_item';
+
+    case REVISION = 'revision';
     case PRODUCT = 'product';
     case PORTFOLIO = "portfolio";
     case TESTIMONIAL = 'testimonial';

@@ -11,11 +11,27 @@ use Vigihdev\WpCliModels\Exceptions\ContentFetchException;
 final class FilepathDtoTransformer
 {
 
+    /**
+     * Transform JSON string to DTO object or array
+     *
+     * @param string $json JSON string
+     * @param string $dtoClass DTO class name
+     *
+     * @return object|array DTO object or array
+     */
     public static function fromJson(string $json, string $dtoClass): object|array
     {
         return self::dtoTransform($json, $dtoClass);
     }
 
+    /**
+     * Transform JSON string to DTO object or array
+     *
+     * @param string $filepath Filepath to JSON file
+     * @param string $dtoClass DTO class name
+     *
+     * @return object|array DTO object or array
+     */
     public static function fromFileJson(string $filepath, string $dtoClass): object|array
     {
 
@@ -42,6 +58,14 @@ final class FilepathDtoTransformer
         return self::dtoTransform($json, $dtoClass);
     }
 
+    /**
+     * Transform CSV string to DTO object or array
+     *
+     * @param string $filepath Filepath to CSV file
+     * @param string $dtoClass DTO class name
+     *
+     * @return object|array DTO object or array
+     */
     public static function fromFileCsv(string $filepath, string $dtoClass): array
     {
         if (!is_file($filepath)) {
@@ -88,6 +112,14 @@ final class FilepathDtoTransformer
         return self::dtoTransform($json, $dtoClass);
     }
 
+    /**
+     * Transform JSON string to DTO object or array
+     *
+     * @param string $json JSON string
+     * @param string $dtoClass DTO class name
+     *
+     * @return object|array DTO object or array
+     */
     private static function dtoTransform(string $json, string $dtoClass): object|array
     {
         try {

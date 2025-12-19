@@ -13,7 +13,8 @@ final class JsonFormatter extends BaseFormater implements FormatterInterface
     public function __construct(
         private readonly array $items,
         private readonly array $fields,
-        ?string $filepath = null
+        ?string $filepath = null,
+        private int $flags = JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES
     ) {
         parent::__construct($filepath);
     }
@@ -70,6 +71,6 @@ final class JsonFormatter extends BaseFormater implements FormatterInterface
             }
         }
 
-        file_put_contents($path, json_encode($items, JSON_PRETTY_PRINT));
+        file_put_contents($path, json_encode($items, $this->flags));
     }
 }

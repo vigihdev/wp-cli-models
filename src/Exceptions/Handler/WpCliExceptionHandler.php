@@ -39,12 +39,13 @@ final class WpCliExceptionHandler implements HandlerExceptionInterface
 
         // Jika ada konteks, tambahkan ke pesan
         if (is_array($contexts) && count($contexts) > 0) {
+            $maxLabelLength = max(array_map('strlen', array_keys($contexts)));
             foreach ($contexts as $key => $value) {
+                $value = is_array($value) ? implode(', ', $value) : (string) $value;
+                $tab = str_repeat(' ', 5);
+                $padding = str_repeat(' ', $maxLabelLength - strlen($key));
                 $message .= self::LINE;
-                $message .= self::TAB . $key . ' : ';
-                $value = is_array($value) ? implode(', ', $value) : $value;
-                $message .= $io->highlightText((string) $value);
-                // $message .= self::LINE . self::TAB . self::SPACE . $io->highlightText((string) $value);
+                $message .= sprintf("%s%s: %s%s", $tab, $key, $padding, $io->highlightText($value));
             }
         }
 

@@ -22,6 +22,8 @@ interface UserEntityInterface
      */
     public function getEmail(): string;
 
+    public function getUsername(): string;
+
     /**
      * First name user
      */
@@ -51,4 +53,9 @@ interface UserEntityInterface
      * URL user
      */
     public function getUrl(): string;
+
+    /**
+     * Roles user
+     */
+    public function getRoles(): array;
 }

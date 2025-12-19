@@ -6,13 +6,26 @@ namespace Vigihdev\WpCliModels\UI;
 
 use cli\progress\Bar;
 use cli\Table;
-use Vigihdev\WpCliModels\UI\Components\AskPreset;
-use Vigihdev\WpCliModels\UI\Components\BlockPreset;
-use Vigihdev\WpCliModels\UI\Components\SummaryPreset;
+use Vigihdev\WpCliModels\UI\Components\{AskPreset, DryRunPresetExport, BlockPreset, DryRunPreset, SummaryPreset};
 use WP_CLI;
 
 final class CliStyle
 {
+
+    public function renderDryRunPreset(string $sectionName): DryRunPreset
+    {
+        return new DryRunPreset($this, $sectionName);
+    }
+    public function renderDryRunPresetExport(string $format, string $name, int $total, ?string $output = null): DryRunPresetExport
+    {
+        return new DryRunPresetExport(
+            io: $this,
+            format: $format,
+            name: $name,
+            total: $total,
+            output: $output
+        );
+    }
 
     public function renderAsk(): AskPreset
     {
@@ -24,10 +37,10 @@ final class CliStyle
         return new BlockPreset($this, $message);
     }
 
-    public function renderSummary(array $items)
+    public function renderSummary(array $items, bool $withHr = true): void
     {
         $summary = new SummaryPreset($this, $items);
-        $summary->render();
+        $summary->render($withHr);
     }
     public function title(string $msg, string $color = '%G'): void
     {

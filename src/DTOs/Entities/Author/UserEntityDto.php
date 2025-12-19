@@ -7,6 +7,7 @@ namespace Vigihdev\WpCliModels\DTOs\Entities\Author;
 use Vigihdev\WpCliModels\DTOs\Entities\BaseEntityDto;
 use InvalidArgumentException;
 use Vigihdev\WpCliModels\Contracts\Entities\Author\UserEntityInterface;
+use WP_User;
 
 final class UserEntityDto extends BaseEntityDto implements UserEntityInterface
 {
@@ -15,22 +16,26 @@ final class UserEntityDto extends BaseEntityDto implements UserEntityInterface
      *
      * @param int $id ID user
      * @param string $email Email user
+     * @param string $userLogin Username user
      * @param string $firstname First name user
      * @param string $lastname Last name user
      * @param string $level Level user
      * @param string $nicename Nice name user
      * @param string $status Status user
      * @param string $url URL user
+     * @param array $roles Roles user
      */
     public function __construct(
         private readonly int $id,
         private readonly string $email,
+        private readonly string $userLogin,
         private readonly string $firstname,
         private readonly string $lastname,
         private readonly string $level,
         private readonly string $nicename,
         private readonly string $status,
-        private readonly string $url
+        private readonly string $url,
+        private readonly array $roles = [],
     ) {}
 
     /**
@@ -47,6 +52,14 @@ final class UserEntityDto extends BaseEntityDto implements UserEntityInterface
     public function getEmail(): string
     {
         return $this->email;
+    }
+
+    /**
+     * Username user
+     */
+    public function getUsername(): string
+    {
+        return $this->userLogin;
     }
 
     /**
@@ -96,6 +109,13 @@ final class UserEntityDto extends BaseEntityDto implements UserEntityInterface
     {
         return $this->url;
     }
+    /**
+     * Roles user
+     */
+    public function getRoles(): array
+    {
+        return $this->roles;
+    }
 
     /**
      * Mengubah objek menjadi array
@@ -106,6 +126,7 @@ final class UserEntityDto extends BaseEntityDto implements UserEntityInterface
     {
         return [
             'ID' => $this->id,
+            'user_login' => $this->userLogin,
             'user_email' => $this->email,
             'user_firstname' => $this->firstname,
             'user_lastname' => $this->lastname,
@@ -125,8 +146,16 @@ final class UserEntityDto extends BaseEntityDto implements UserEntityInterface
     public static function fromQuery(mixed $data): static
     {
 
+        if ($data instanceof WP_User) {
+            $userData = $data->data;
+            $data = array_merge(get_object_vars($userData), get_object_vars($data));
+        }
+
         if (is_object($data)) {
             $data = get_object_vars($data);
+        }
+
+        if (is_array($data)) {
             $data = array_change_key_case($data, CASE_LOWER);
             foreach ($data as $key => $value) {
                 if (! is_string($key)) {
@@ -134,6 +163,10 @@ final class UserEntityDto extends BaseEntityDto implements UserEntityInterface
                 }
 
                 if (!str_starts_with($key, 'user_')) {
+                    continue;
+                }
+
+                if ($key === 'user_login') {
                     continue;
                 }
 
@@ -162,12 +195,14 @@ final class UserEntityDto extends BaseEntityDto implements UserEntityInterface
         return new static(
             id: (int) $data['id'],
             email: $data['email'] ?? '',
+            userLogin: $data['user_login'] ?? '',
             firstname: $data['firstname'] ?? '',
             lastname: $data['lastname'] ?? '',
             level: $data['level'] ?? '',
             nicename: $data['nicename'] ?? '',
             status: $data['status'] ?? '',
-            url: $data['url'] ?? ''
+            url: $data['url'] ?? '',
+            roles: $data['roles'] ?? [],
         );
     }
 }

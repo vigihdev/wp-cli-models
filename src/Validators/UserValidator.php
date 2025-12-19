@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Vigihdev\WpCliModels\Validators;
 
+use Vigihdev\WpCliModels\Entities\UserEntity;
 use Vigihdev\WpCliModels\Exceptions\UserException;
 
 final class UserValidator
@@ -53,7 +54,7 @@ final class UserValidator
         }
 
         // Dalam implementasi nyata: cek database
-        if (!get_user_by('ID', $this->userId)) {
+        if (! UserEntity::exists($this->userId)) {
             throw UserException::userNotFound($this->userId);
         }
 
@@ -98,6 +99,10 @@ final class UserValidator
         $username = $this->data['username'] ?? '';
 
         if (empty($username) || strlen($username) < 3) {
+            throw UserException::duplicateUsername($username);
+        }
+
+        if (UserEntity::exists($username)) {
             throw UserException::duplicateUsername($username);
         }
 

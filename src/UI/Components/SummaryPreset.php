@@ -20,7 +20,7 @@ final class SummaryPreset
      * 
      * @return void
      */
-    public function render(): void
+    public function render(bool $withHr = true): void
     {
 
         if (empty($this->items)) {
@@ -29,17 +29,23 @@ final class SummaryPreset
 
         $title = "📊 Summary:";
         $io = $this->io;
-        $io->hr();
+        if ($withHr) {
+            $io->hr();
+        }
         $io->line($io->textGreen($title));
         foreach ($this->renderItems() as $label => $value) {
-            $padding = str_repeat(' ', strlen($label) - 6);
+            $padding = str_repeat(' ', 4);
             $lineLabel = sprintf("%s%s", $padding, $label);
             $lineValue = sprintf("%s", (string)$value);
+
             $io->line(
                 $io->textGreen($lineLabel, '%g') . $io->textGreen($lineValue)
             );
         }
-        $io->hr();
+
+        if ($withHr) {
+            $io->hr();
+        }
     }
 
     /**
@@ -47,7 +53,7 @@ final class SummaryPreset
      *
      * @return array<string, string>
      */
-    public function renderItems(): array
+    private function renderItems(): array
     {
         if (empty($this->items)) {
             return [];
@@ -63,7 +69,7 @@ final class SummaryPreset
             }
             $label = Text::toTitleCase($label);
             $padding = str_repeat(' ', $maxLabelLength - strlen($label));
-            $lines[sprintf("%s%s: ", $label, $padding)] = (string)$value;
+            $lines[sprintf("%s:%s ", $label, $padding)] = (string)$value;
         }
 
         return $lines;

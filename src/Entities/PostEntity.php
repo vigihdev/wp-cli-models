@@ -13,10 +13,12 @@ use Vigihdev\WpCliModels\DTOs\Entities\Post\PostEntityDto;
 final class PostEntity
 {
 
+
     /**
+     * Mengambil post berdasarkan ID
      *
-     * @param int $postId
-     * @return PostEntityDto|null
+     * @param int $postId ID post yang akan dicari
+     * @return PostEntityDto|null Instance PostEntityDto jika post ditemukan, null jika tidak
      */
     public static function get(int $postId): ?PostEntityDto
     {
@@ -30,11 +32,12 @@ final class PostEntity
     }
 
     /**
+     * Mencari post berdasarkan kriteria tertentu
      *
-     * @param int $limit
-     * @param int $offset
-     * @param array $args
-     * @return Collection<PostEntityDto>
+     * @param int $limit Jumlah post yang akan diambil (default: 50)
+     * @param int $offset Offset post yang akan diambil (default: 0)
+     * @param array $args Argumen kueri post (default: [])
+     * @return Collection<PostEntityDto> Daftar post dalam format $arrayName = array();
      */
     public static function filter(int $limit = 50, int $offset = 0, array $args = []): Collection
     {
@@ -149,36 +152,23 @@ final class PostEntity
 
     /**
      * Mengambil posts berdasarkan kriteria tertentu
-     *
-     * @param array $args Argumen untuk query posts
-     * @return array Daftar posts
+     * 
+     * @param array $args Argumen untuk query posts, default: []
+     * @return Collection<PostEntityDto> Daftar collection post dalam format PostEntityDto
      */
-    public static function find(array $args = []): array
+    public static function find(array $args = []): Collection
     {
-        $defaults = [
-            'post_type' => 'any',
-            'post_status' => 'publish',
-            'posts_per_page' => 10,
-        ];
 
-        $queryArgs = wp_parse_args($args, $defaults);
+        $queryArgs = wp_parse_args($args);
         $query = new WP_Query($queryArgs);
 
-        return $query->posts;
-    }
+        $posts = array_filter($query->get_posts(), fn($post) => $post instanceof WP_Post);
+        $data = array_map(
+            fn($post) => PostEntityDto::fromQuery($post),
+            $posts
+        );
 
-    /**
-     * Mengambil satu post berdasarkan kriteria tertentu
-     *
-     * @param array $args Argumen untuk query posts
-     * @return WP_Post|null Instance WP_Post jika post ditemukan, null jika tidak
-     */
-    public static function findOne(array $args = []): ?WP_Post
-    {
-        $args['posts_per_page'] = 1;
-        $posts = self::find($args);
-
-        return !empty($posts) ? $posts[0] : null;
+        return new Collection($data);
     }
 
     /**
@@ -264,18 +254,5 @@ final class PostEntity
 
         $posts = self::find($args);
         return !empty($posts) ? $posts[0] : null;
-    }
-
-    /**
-     * Menghitung jumlah posts berdasarkan kriteria
-     *
-     * @param array $args Argumen untuk query posts
-     * @return int Jumlah posts
-     */
-    public static function count(array $args = []): int
-    {
-        $args['posts_per_page'] = 1;
-        $query = new WP_Query($args);
-        return $query->found_posts;
     }
 }
