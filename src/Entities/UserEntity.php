@@ -41,27 +41,36 @@ final class UserEntity
     /**
      * Mengambil semua user dalam bentuk array DTO
      * 
+     * @param array $args Argumen untuk query user, default: []
+     * @see https://developer.wordpress.org/reference/functions/get_users/
      * @return Collection<UserEntityDto> Array dari UserEntityDto  
      */
-    public static function findAll(): Collection
+    public static function find(array $args = []): Collection
     {
+        $defaultArgs = [];
+        if (isset($args['limit'])) {
+            $defaultArgs['number'] = $args['limit'];
+        }
+
+        $args = array_merge($defaultArgs, $args);
+
         $users = array_map(
             fn(WP_User $user) => UserEntityDto::fromQuery($user),
-            get_users()
+            get_users($args)
         );
 
         return new Collection($users);
     }
 
     /**
-     * Mengambil satu user berdasarkan ID atau username/email/nickname
+     * Mengambil satu user berdasarkan kriteria tertentu
      * 
-     * @param int|string $user ID user atau username/email
+     * @param array $args Argumen untuk query user, default: []
      * @return UserEntityDto|null Instance UserEntityDto jika user ditemukan, null jika tidak
      */
-    public static function findOne(): ?UserEntityDto
+    public static function findOne(array $args = []): ?UserEntityDto
     {
-        return self::findAll()?->first() ?? null;
+        return self::find($args)?->first() ?? null;
     }
 
     /**
@@ -76,6 +85,17 @@ final class UserEntity
     }
 
     /**
+     * Menghitung total user dalam sistem berdasarkan kriteria tertentu
+     * 
+     * @param array $args Argumen untuk query user, default: []
+     * @return int Total user
+     */
+    public static function count(array $args = []): int
+    {
+        return self::find($args)->count();
+    }
+
+    /**
      * Membuat user baru dalam sistem
      * 
      * @param string $username Username user
@@ -86,6 +106,44 @@ final class UserEntity
     public static function create(string $username, string $password, string $email): int|WP_Error
     {
         return wp_create_user($username, $password, $email);
+    }
+
+    /**
+     * Memasukkan user baru ke dalam sistem
+     * 
+     * ```php
+     * $userData = [
+     *   'ID' => 1,
+     *   'user_pass' => 'new_password',
+     *   'user_login' => 'new_username',
+     *   'user_nicename' => 'new_nicename',
+     *   'user_url' => 'new_url',
+     *   'user_email' => 'new_email',
+     *   'display_name' => 'new_display_name',
+     *   'nickname' => 'new_nickname',
+     *   'first_name' => 'new_first_name',
+     *   'last_name' => 'new_last_name',
+     *   'description' => 'new_description',
+     *   'rich_editing' => 'true',
+     *   'syntax_highlighting' => 'true',
+     *   'comment_shortcuts' => 'true',
+     *   'admin_color' => 'fresh',
+     *   'use_ssl' => true,
+     *   'user_registered' => '2023-01-01 00:00:00',
+     *   'user_activation_key' => '',
+     *   'spam' => false,
+     *   'show_admin_bar_front' => 'true',
+     *   'role' => 'subscriber',
+     *   'locale' => 'en_US',
+     *   'meta_input' => [],
+     * ];
+     * ```
+     * @param array<string, mixed> $userdata Data user yang akan dimasukkan ke dalam sistem
+     * @return int|WP_Error ID user yang dimasukkan, WP_Error jika gagal
+     */
+    public static function insert(array $userdata): int|WP_Error
+    {
+        return wp_insert_user($userdata);
     }
 
     /**

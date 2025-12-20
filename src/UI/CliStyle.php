@@ -6,11 +6,20 @@ namespace Vigihdev\WpCliModels\UI;
 
 use cli\progress\Bar;
 use cli\Table;
-use Vigihdev\WpCliModels\UI\Components\{AskPreset, DryRunPresetExport, BlockPreset, DryRunPreset, SummaryPreset};
+use Vigihdev\WpCliModels\UI\Components\{AskPreset, DryRunPresetExport, BlockPreset, DryRunPreset, InlinePreset, PaginationPreset, SummaryPreset};
 use WP_CLI;
 
 final class CliStyle
 {
+
+    public function renderPaginationPreset(string $sectionName, int $showItem, int $total): PaginationPreset
+    {
+        return new PaginationPreset($this, $sectionName, $showItem, $total);
+    }
+    public function renderInlinePreset(): InlinePreset
+    {
+        return new InlinePreset($this);
+    }
 
     public function renderDryRunPreset(string $sectionName): DryRunPreset
     {
@@ -344,7 +353,7 @@ final class CliStyle
     /**
      * Tampilkan key-value pairs
      */
-    public function definitionList(array $items, bool $hr = false): void
+    public function definitionList(array $items, bool $hr = false, int $padding = 0): void
     {
         if ($hr) {
             $this->hr();
@@ -360,11 +369,14 @@ final class CliStyle
         }
 
         foreach ($items as $key => $value) {
+            $paddingLeft = $padding > 0 ? str_repeat(' ', $padding) : '';
             $spaces = str_repeat(' ', $maxLength - strlen($key));
+            $value = strlen((string) $value) > 160 ? substr((string) $value, 0, 100) . '...' : (string) $value;
             WP_CLI::log(
-                WP_CLI::colorize("%G{$key}:%n{$spaces} {$value}")
+                WP_CLI::colorize("%G{$paddingLeft}{$key}:%n{$spaces} {$value}")
             );
         }
+
         if ($hr) {
             $this->hr();
         }

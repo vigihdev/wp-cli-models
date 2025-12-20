@@ -133,7 +133,8 @@ final class UserEntityDto extends BaseEntityDto implements UserEntityInterface
             'user_level' => $this->level,
             'user_nicename' => $this->nicename,
             'user_status' => $this->status,
-            'user_url' => $this->url
+            'user_url' => $this->url,
+            'roles' => $this->roles,
         ];
     }
 

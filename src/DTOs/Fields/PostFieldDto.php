@@ -117,11 +117,12 @@ final class PostFieldDto extends BaseFieldDto implements PostFieldInterface
     public static function fromArray(array $data): static
     {
         return new self(
-            (string) ($data['title'] ?? ''),
-            (string) ($data['content'] ?? ''),
-            (string) ($data['status'] ?? ''),
-            (string) ($data['type'] ?? ''),
-            (int) ($data['author'] ?? 0),
+            title: (string) ($data['title'] ?? ''),
+            content: (string) ($data['content'] ?? ''),
+            status: (string) ($data['status'] ?? ''),
+            type: (string) ($data['type'] ?? ''),
+            author: (int) ($data['author'] ?? 0),
+            taxInput: $data['tax_input'] ?? [],
         );
     }
 

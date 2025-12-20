@@ -16,6 +16,7 @@ final class PostCreationException extends WpCliModelException
     public const CODE_POST_NOT_FOUND = 3003;
     public const CODE_INVALID_AUTHOR = 3004;
     public const CODE_INVALID_STATUS = 3005;
+    public const CODE_INVALID_CATEGORY = 3006;
 
     /**
      * Create dari WP_Error
@@ -116,6 +117,24 @@ final class PostCreationException extends WpCliModelException
             solutions: [
                 'Gunakan status post yang valid',
                 'Periksa dokumentasi untuk daftar status yang didukung'
+            ]
+        );
+    }
+
+    public static function invalidCategory(array|string|int $category): self
+    {
+
+        if (is_array($category)) {
+            $category = implode(', ', $category);
+        }
+
+        return new self(
+            message: "Invalid category ID: {$category}",
+            context: ['category' => $category],
+            code: self::CODE_INVALID_CATEGORY,
+            solutions: [
+                'Periksa kembali ID category',
+                'Pastikan category dengan ID tersebut tersedia'
             ]
         );
     }

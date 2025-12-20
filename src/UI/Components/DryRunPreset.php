@@ -28,6 +28,8 @@ final class DryRunPreset
      */
     private array $warningValidations = [];
 
+    private array $itemsTable = [];
+
     public function __construct(
         private readonly CliStyle $io,
         private readonly string $sectionName,
@@ -89,6 +91,12 @@ final class DryRunPreset
             $io->newLine();
         }
 
+        // Render items table
+        if (! empty($this->itemsTable)) {
+            $io->table($this->itemsTable['rows'], $this->itemsTable['headers']);
+            $io->newLine();
+        }
+
         // Render definition list
         if (! empty($this->itemsDefinition)) {
             $io->definitionList($this->itemsDefinition, $this->hrDefinition);
@@ -107,8 +115,31 @@ final class DryRunPreset
             if (strlen($line) === 0) {
                 continue;
             }
-            $this->lineInfos[] = sprintf("%s %s", $io->textSuccess("✔"), $io->textSuccess("{$line}", '%y'));
+            $this->lineInfos[] = sprintf("%s %s", $io->textSuccess("✔"), $io->textYellow("{$line}", '%y'));
         }
+
+        return $this;
+    }
+
+    public function addTable(array $items): self
+    {
+        $headers = array_keys($items[0] ?? []);
+        $rows = [];
+        foreach ($items as $item) {
+            foreach ($item as $key => $value) {
+                if (is_array($value)) {
+                    $value = implode(', ', $value);
+                    $item[$key] = $value;
+                }
+            }
+
+            $rows[] = array_values($item);
+        }
+
+        $this->itemsTable = [
+            'headers' => $headers,
+            'rows' => $rows,
+        ];
 
         return $this;
     }

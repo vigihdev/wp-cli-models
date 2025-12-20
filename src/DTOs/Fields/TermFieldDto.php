@@ -95,10 +95,10 @@ final class TermFieldDto extends BaseFieldDto implements TermFieldInterface
     public static function fromArray(array $data): static
     {
         return new self(
-            (string) ($data['name'] ?? ''),
-            isset($data['slug']) ? (string) $data['slug'] : null,
-            (string) ($data['taxonomy'] ?? ''),
-            isset($data['description']) ? (string) $data['description'] : null,
+            name: (string) ($data['name'] ?? ''),
+            slug: isset($data['slug']) ? (string) $data['slug'] : null,
+            taxonomy: (string) ($data['taxonomy'] ?? ''),
+            description: isset($data['description']) ? (string) $data['description'] : null,
         );
     }
 }

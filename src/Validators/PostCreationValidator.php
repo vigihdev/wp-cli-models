@@ -77,6 +77,30 @@ final class PostCreationValidator
         return $this;
     }
 
+    private function mustBeValidPostType(string $postType): self
+    {
+        return $this;
+    }
+
+    private function mustBeValidCategory(array|int|string $category): self
+    {
+
+        if (is_array($category)) {
+            $category = array_map(fn($cat) => (int) $cat, $category);
+        }
+
+        $category = is_string($category) ? (int) $category : $category;
+        $categorys = is_array($category) ? $category : [$category];
+
+        foreach ($categorys as $cat) {
+            if (!get_term($cat, 'category')) {
+                throw PostCreationException::invalidCategory($cat);
+            }
+        }
+
+        return $this;
+    }
+
     public function mustBeCreatable(): self
     {
         // Validasi dasar untuk data post

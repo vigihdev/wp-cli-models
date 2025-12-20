@@ -153,6 +153,15 @@ final class PostEntity
     /**
      * Mengambil posts berdasarkan kriteria tertentu
      * 
+     * ```php
+     * $args = [
+     *   'post_type' => 'post'
+     *   'post_status' => 'publish',
+     *   'posts_per_page' => 50,
+     *   'offset' => 0,
+     * ];
+     * $posts = PostEntity::find($args);
+     * ```
      * @param array $args Argumen untuk query posts, default: []
      * @return Collection<PostEntityDto> Daftar collection post dalam format PostEntityDto
      */
@@ -172,8 +181,44 @@ final class PostEntity
     }
 
     /**
-     * Membuat post baru
-     *
+     * Membuat post baru 
+     * 
+     * ```php
+     * $postData = [
+     *   'ID' => 2,
+     *   'post_author' => 1,
+     *   'post_date' => '2023-12-01 12:00:00',
+     *   'post_date_gmt' => '2023-12-01 12:00:00',
+     *   'post_content' => 'Ini adalah isi post',
+     *   'post_content_filtered' => '',
+     *   'post_title' => 'Judul Post',
+     *   'post_excerpt' => 'Ringkasan post',
+     *   'post_status' => 'publish',
+     *   'post_type' => 'post',
+     *   'comment_status' => 'open',
+     *   'ping_status' => 'open',
+     *   'post_password' => '',
+     *   'post_name' => 'judul-post',
+     *   'to_ping' => '',
+     *   'pinged' => '',
+     *   'post_parent' => 0,
+     *   'menu_order' => 0,
+     *   'post_mime_type' => '',
+     *   'guid' => 'https://example.com/judul-post/',     
+     *   'import_id' => 0,
+     *   'post_category' => [1, 2, 3],
+     *   'tags_input' => ['tag1', 'tag2'],
+     *   'tax_input' => [
+     *     'category' => [1, 2, 3],
+     *     'post_tag' => ['tag1', 'tag2'],
+     *   ],
+     *   'meta_input' => [
+     *     'meta_key1' => 'meta_value1',
+     *     'meta_key2' => 'meta_value2',
+     *   ],
+     *   'page_template' => 'page-template.php',
+     * ];
+     * ```
      * @param array $postData Data post yang akan dibuat
      * @return int|WP_Error ID post yang dibuat atau WP_Error jika gagal
      */
@@ -184,7 +229,45 @@ final class PostEntity
 
     /**
      * Mengupdate post yang ada
-     *
+     * 
+     * ```php
+     * $postData = [
+     *   'ID' => 2,
+     *   'post_author' => 1,
+     *   'post_date' => '2023-12-01 12:00:00',
+     *   'post_date_gmt' => '2023-12-01 12:00:00',
+     *   'post_content' => 'Ini adalah isi post',
+     *   'post_content_filtered' => '',
+     *   'post_title' => 'Judul Post',
+     *   'post_excerpt' => 'Ringkasan post',
+     *   'post_status' => 'publish',
+     *   'post_type' => 'post',
+     *   'comment_status' => 'open',
+     *   'ping_status' => 'open',
+     *   'post_password' => '',
+     *   'post_name' => 'judul-post',
+     *   'to_ping' => '',
+     *   'pinged' => '',
+     *   'post_parent' => 0,
+     *   'menu_order' => 0,
+     *   'post_mime_type' => '',
+     *   'guid' => 'https://example.com/judul-post/',     
+     *   'import_id' => 0,
+     *   'post_category' => [1, 2, 3],
+     *   'tags_input' => ['tag1', 'tag2'],
+     *   'tax_input' => [
+     *     'category' => [1, 2, 3],
+     *     'post_tag' => ['tag1', 'tag2'],
+     *   ],
+     *   'meta_input' => [
+     *     'meta_key1' => 'meta_value1',
+     *     'meta_key2' => 'meta_value2',
+     *   ],
+     *   'page_template' => 'page-template.php',
+     * ];
+     * ```
+     * @see https://developer.wordpress.org/reference/functions/wp_update_post/
+     * @see PostEntity::create()
      * @param int $postId ID post yang akan diupdate
      * @param array $postData Data post yang akan diupdate
      * @return int|WP_Error ID post yang diupdate atau WP_Error jika gagal
