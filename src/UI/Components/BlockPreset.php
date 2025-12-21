@@ -92,9 +92,9 @@ final class BlockPreset
         $width = $this->getWidth($message);
         $background = str_repeat(' ', $width);
 
-        $text = WP_CLI::colorize("%k{$this->message}%n");
+        $text = WP_CLI::colorize("%w{$this->message}%n");
         $io->log(WP_CLI::colorize("%1{$background}%n"));
-        $io->log(WP_CLI::colorize("%w{$text}%n"));
+        $io->log(WP_CLI::colorize("%1{$text}%n"));
         $io->log(WP_CLI::colorize("%1{$background}%n"));
     }
 

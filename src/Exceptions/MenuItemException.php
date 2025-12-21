@@ -80,6 +80,25 @@ final class MenuItemException extends WpCliModelException
         );
     }
 
+    public static function menuItemNotBelongToMenu(int $menuId, string $menuName, array $context = []): self
+    {
+
+        return new self(
+            message: sprintf("Menu item ID %d tidak termasuk dalam menu '%s'", $menuId, $menuName),
+            context: [
+                'menu_id' => $menuId,
+                'menu_name' => $menuName,
+                ...$context,
+            ],
+            code: self::INVALID_TYPE,
+            solutions: [
+                "Cek lokasi menu item {$menuId} dengan wp menu-item:get {$menuId}",
+                'Lihat daftar menu item dengan wp menu-item:list',
+                'Periksa apakah menu item termasuk dalam menu ID yang diharapkan',
+            ]
+        );
+    }
+
     public static function duplicateTitle(string $title, int $parentId, array $context = []): self
     {
         return new self(

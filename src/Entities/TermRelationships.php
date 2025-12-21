@@ -20,6 +20,7 @@ use WP_Term;
  * 
  * @method PostEntityDto getPostDto(): PostEntityDto 
  * @method TermEntityDto getTermDto(): TermEntityDto 
+ * @method MenuItemEntityDto getMenuItemDto(): MenuItemEntityDto
  * @method int getObjectId(): int 
  * @method int getTermTaxonomyId(): int 
  * @method int getTermOrder(): int

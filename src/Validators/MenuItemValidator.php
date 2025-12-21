@@ -165,6 +165,19 @@ final class MenuItemValidator
         return $this;
     }
 
+    public function mustBeMenuItemBelongToMenu(): self
+    {
+        $this->mustPostExist()->mustMenuExist();
+
+        $collection = MenuItemEntity::get((int)$this->menu->getTermId());
+
+        $menuItem = $collection->filter(fn($dto) => $dto->getId() === (int)$this->post->getId())?->first();
+        if (!$menuItem) {
+            throw MenuItemException::menuItemNotBelongToMenu($this->post->getId(), $this->menu->getName());
+        }
+        return $this;
+    }
+
     /**
      * Validasi bahwa parent item ada dan valid
      * 

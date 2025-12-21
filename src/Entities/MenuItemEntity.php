@@ -12,7 +12,7 @@ use WP_Error;
 final class MenuItemEntity
 {
 
-    public static function findOne(int $postId, int $menuId): ?MenuItemEntityDto
+    public static function findOne(int $postId, int|string $menuId): ?MenuItemEntityDto
     {
 
         $menu = self::get($menuId)
