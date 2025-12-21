@@ -12,6 +12,16 @@ use WP_Error;
 final class MenuItemEntity
 {
 
+    public static function findOne(int $postId, int $menuId): ?MenuItemEntityDto
+    {
+
+        $menu = self::get($menuId)
+            ->filter(fn($dto) => $dto->getId() === $postId)
+            ->first();
+
+        return $menu;
+    }
+
     /**
      * Mengambil item menu berdasarkan menu dan mengembalikan dalam bentuk collection
      *
@@ -67,24 +77,24 @@ final class MenuItemEntity
      * Membuat item menu baru berdasarkan nama menu dan data yang diberikan
      *
      * @param string $menuName Nama menu tempat item menu akan dibuat
-     * @param array $data Data item menu yang akan dibuat
+     * @param array $menu_item_data Data item menu yang akan dibuat (contoh: ['title' => 'Home', 'type' => 'post_type', 'url' => 'https://example.com'])
      * @return int|WP_Error ID item menu yang berhasil dibuat atau WP_Error jika gagal
      */
-    public static function create(string $menuName, array $data): int|WP_Error
+    public static function create(string $menuName, array $menu_item_data): int|WP_Error
     {
         if (! MenuEntity::exists($menuName)) {
             return new WP_Error(code: 404, message: "Menu '{$menuName}' tidak ditemukan");
         }
 
-        if (empty($data)) {
+        if (empty($menu_item_data)) {
             return new WP_Error(code: 400, message: "Data item menu tidak boleh kosong");
         }
 
         $menuId = MenuEntity::get($menuName)->getTermId();
-        return wp_update_nav_menu_item($menuId, 0, $data);
+        return wp_update_nav_menu_item($menuId, 0, $menu_item_data);
     }
 
-    private static function update(int $id, array $data) {}
+    private static function update(int $id, array $menu_item_data) {}
 
     /**
      * Memeriksa apakah menu item dengan tipe dan judul tertentu ada
@@ -104,16 +114,22 @@ final class MenuItemEntity
     /**
      * Menghapus menu item berdasarkan ID
      *
-     * @param int|string $menu ID, nama slug atau objek menu yang akan dicari
-     * @param string $type Tipe menu item yang akan dihapus
-     * @param string $title Judul menu item yang akan dihapus
+     * @param int $postId ID menu item yang akan dihapus
      * @return bool True jika berhasil dihapus, false jika gagal
      */
-    public static function delete(int|string $menu, string $type, string $title): bool
+    public static function delete(int $postId): bool
     {
-        if (self::exists($menu, $type, $title)) {
-            return (bool) wp_delete_post(self::getTypeTitle($menu, $type, $title)->getId(), true);
+
+        $post = get_post($postId);
+
+        if (!$post) {
+            return false;
         }
-        return false;
+
+        if ($post->post_type !== 'nav_menu_item') {
+            return false;
+        }
+
+        return (bool) wp_delete_post($postId, true);
     }
 }

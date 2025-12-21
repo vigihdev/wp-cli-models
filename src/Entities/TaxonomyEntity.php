@@ -10,11 +10,14 @@ final class TaxonomyEntity
     /**
      * Mengambil semua taxonomy dalam bentuk array
      *
+     * @param array $args Argument opsional untuk filter taxonomy
+     * @param string $output Format output, default 'names'
+     * @param string $operator Operator logika untuk filter, default 'and'
      * @return array<string, string> Array dari slug taxonomy dan label taxonomy yang ada
      */
-    public static function findAll(): array
+    public static function findAll(array $args = [], string $output = 'names', string $operator = 'and'): array
     {
-        return get_taxonomies();
+        return get_taxonomies($args, $output, $operator);
     }
 
     /**

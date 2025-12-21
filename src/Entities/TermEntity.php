@@ -12,12 +12,16 @@ use WP_Error;
 final class TermEntity
 {
     /**
+     * Mencari semua term berdasarkan taxonomy
+     * 
+     * @param array $args Argument untuk query term
+     * @param string $deprecated Argument deprecated (default: '')
      *
      * @return Collection<TermEntityDto>
      */
-    public static function findAll(): Collection
+    public static function findAll(array $args = [], string $deprecated = ''): Collection
     {
-        $terms = get_terms();
+        $terms = get_terms($args, $deprecated);
 
         if (!$terms || is_wp_error($terms)) {
             return new Collection([]);
@@ -141,7 +145,7 @@ final class TermEntity
     }
 
     /**
-     * Membuat term baru
+     * Membuat term baru dalam taxonomy tertentu
      *
      * @param string $term Nama term yang akan dibuat
      * @param string $taxonomy Nama taxonomy tempat membuat term

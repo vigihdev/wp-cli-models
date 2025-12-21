@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Vigihdev\WpCliModels\Entities;
 
 use Generator;
+use Vigihdev\WpCliModels\DTOs\Entities\Menu\MenuItemEntityDto;
 use Vigihdev\WpCliModels\DTOs\Entities\Post\PostEntityDto;
 use Vigihdev\WpCliModels\DTOs\Entities\Terms\TermEntityDto;
 use WP_Post;
@@ -90,16 +91,46 @@ final class TermRelationships
     }
 
 
+    /**
+     * Mengambil post entity dto berdasarkan object id
+     *
+     * @return PostEntityDto|null
+     */
     public function getPostDto(): ?PostEntityDto
     {
         $post = get_post($this->object_id);
         return $post instanceof WP_Post ? PostEntityDto::fromQuery($post) : null;
     }
+
+    /**
+     * Mengambil term entity dto berdasarkan term taxonomy id
+     *
+     * @return TermEntityDto|null
+     */
     public function getTermDto(): ?TermEntityDto
     {
         $term = get_term_by('term_taxonomy_id', $this->term_taxonomy_id);
         return $term instanceof WP_Term ? TermEntityDto::fromQuery($term) : null;
     }
+
+    /**
+     * Mengambil menu item entity dto berdasarkan object id dan term taxonomy id
+     *
+     * @return MenuItemEntityDto|null
+     */
+    public function getMenuItemDto(): ?MenuItemEntityDto
+    {
+        if (!$this->getPostDto() || !$this->getTermDto()) {
+            return null;
+        }
+        return MenuItemEntity::findOne($this->getPostDto()->getId(), $this->getTermDto()->getTermId());
+    }
+
+    /**
+     * Mengambil term order
+     *
+     * @return int
+     */
     public function getTermOrder(): int
     {
         return $this->term_order;

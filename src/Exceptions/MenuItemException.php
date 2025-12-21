@@ -15,6 +15,8 @@ final class MenuItemException extends WpCliModelException
     public const DELETE_FAILED = 2007;
     public const INVALID_TYPE = 2008;
     public const INVALID_POSITION = 2009;
+    public const DUPLICATE_LINK = 2010;
+
 
     public static function notFound(int $itemId): self
     {
@@ -62,17 +64,51 @@ final class MenuItemException extends WpCliModelException
         );
     }
 
-    public static function duplicateTitle(string $title, int $parentId): self
+    public static function notSameAsType(string $type, string $expectedType): self
+    {
+        return new self(
+            message: sprintf("Tipe menu item '%s' tidak sama dengan tipe yang diharapkan '%s'", $type, $expectedType),
+            context: [
+                'item_type' => $type,
+                'expected_type' => $expectedType,
+            ],
+            code: self::INVALID_TYPE,
+            solutions: [
+                'Gunakan tipe menu item yang valid',
+                'Lihat daftar tipe menu item yang didukung'
+            ]
+        );
+    }
+
+    public static function duplicateTitle(string $title, int $parentId, array $context = []): self
     {
         return new self(
             message: sprintf("Menu item dengan title '%s' sudah ada di parent %d", $title, $parentId),
             context: [
                 'item_title' => $title,
                 'parent_id' => $parentId,
+                ...$context,
             ],
             code: self::DUPLICATE_TITLE,
             solutions: [
                 'Gunakan title yang berbeda',
+                'Update menu item yang sudah ada'
+            ]
+        );
+    }
+
+    public static function duplicateLink(string $link, int $parentId, array $context = []): self
+    {
+        return new self(
+            message: sprintf("Menu item dengan link '%s' sudah ada di parent %d", $link, $parentId),
+            context: [
+                'item_link' => $link,
+                'parent_id' => $parentId,
+                ...$context,
+            ],
+            code: self::DUPLICATE_LINK,
+            solutions: [
+                'Gunakan link yang berbeda',
                 'Update menu item yang sudah ada'
             ]
         );

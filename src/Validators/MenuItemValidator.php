@@ -4,20 +4,136 @@ declare(strict_types=1);
 
 namespace Vigihdev\WpCliModels\Validators;
 
-use Vigihdev\WpCliModels\Entities\TermRelationships;
-use Vigihdev\WpCliModels\Enums\PostType;
-use Vigihdev\WpCliModels\Exceptions\MenuItemException;
-use Vigihdev\WpCliModels\Exceptions\PostException;
+use Vigihdev\WpCliModels\DTOs\Entities\Menu\MenuEntityDto;
+use Vigihdev\WpCliModels\DTOs\Entities\Post\PostEntityDto;
+use Vigihdev\WpCliModels\Entities\{MenuEntity, MenuItemEntity, PostEntity, TermRelationships};
+use Vigihdev\WpCliModels\Enums\{MenuItemType, PostType};
+use Vigihdev\WpCliModels\Exceptions\{MenuException, MenuItemException, PostException};
+
 
 final class MenuItemValidator
 {
-    public function __construct(
-        private readonly int $postId,
-    ) {}
+    private ?PostEntityDto $post = null;
+    private ?MenuEntityDto $menu = null;
+    private ?TermRelationships $termRelations = null;
 
-    public static function validate(int $postId): static
+    public function __construct(
+        private readonly int|string|null $postId = null,
+        private readonly int|string|null $menuId = null,
+    ) {
+
+        // Memvalidasi apakah post_id ada di database
+        if (!$this->post && $postId) {
+            $this->post = PostEntity::get($postId);
+        }
+
+
+        if (!$this->menu && $menuId) {
+            $this->menu = MenuEntity::get($menuId);
+        }
+
+        // Memvalidasi apakah post memiliki relasi dengan menu
+        if ($this->post && $this->menu && !$this->termRelations) {
+            $this->termRelations = new TermRelationships(
+                object_id: $this->post->getId(),
+                term_taxonomy_id: $this->menu->getTermTaxonomyId(),
+            );
+        }
+    }
+
+    /**
+     * Membuat instance validator baru
+     * 
+     * @param int|string|null $postId ID post (opsional)
+     * @param int|string|null $menuId ID menu (opsional)
+     * @return self
+     */
+    public static function validate(int|string|null $postId = null, int|string|null $menuId = null): self
     {
-        return new self($postId);
+        return new self($postId, $menuId);
+    }
+
+    /**
+     * Memvalidasi apakah post_id ada di database
+     * 
+     * @return self
+     * @throws PostException Jika post tidak ditemukan
+     */
+    public function mustPostExist(): self
+    {
+        if (!$this->post) {
+            throw PostException::notFound((int)$this->postId);
+        }
+        return $this;
+    }
+
+    /**
+     * Memvalidasi apakah menu_id ada di database
+     * 
+     * @return self
+     * @throws MenuException Jika menu tidak ditemukan
+     */
+    public function mustMenuExist(): self
+    {
+        if (!$this->menu) {
+            throw MenuException::notFound((string)$this->menuId);
+        }
+        return $this;
+    }
+
+    /**
+     * Memvalidasi apakah title dan link menu item unik di menu tertentu
+     * 
+     * @param string $menuItemType Tipe menu item (custom, post_type, taxonomy, etc.)
+     * @param string $title Title menu item
+     * @param string $link Link menu item
+     * @return self
+     * @throws MenuException Jika menu tidak ditemukan
+     * @throws MenuItemException Jika title atau link duplikat
+     */
+    private function uniqueTitleLink(string $menuItemType, string $title, string $link): self
+    {
+
+        $this->mustMenuExist();
+
+        $menu = $this->menu;
+        $menuItem = MenuItemEntity::get($menu->getTermId());
+        foreach ($menuItem->getIterator() as $item) {
+
+            if ($item->getType() === $menuItemType) {
+
+                if (strtolower($item->getTitle()) === strtolower($title)) {
+                    throw MenuItemException::duplicateTitle($title, $menu->getTermId(), [
+                        'url' => $item->getUrl(),
+                        'title' => $item->getTitle(),
+                        'type' => $item->getType(),
+                    ]);
+                }
+
+                if (strtolower($item->getUrl()) === strtolower($link)) {
+                    throw MenuItemException::duplicateLink($link, $menu->getTermId(), [
+                        'title' => $item->getTitle(),
+                        'type' => $item->getType(),
+                    ]);
+                }
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * Memvalidasi apakah title dan link menu item custom unik di menu tertentu
+     *
+     * @param string $title Title menu item custom
+     * @param string $link Link menu item custom
+     * @return self mengembalikan instance validator
+     * @throws MenuItemException Jika title atau link duplikat
+     */
+    public function mustBeUniqueCustomItem(string $title, string $link): self
+    {
+        $this->uniqueTitleLink(MenuItemType::CUSTOM->value, $title, $link);
+        return $this;
     }
 
     /**
@@ -25,25 +141,25 @@ final class MenuItemValidator
      *  dan memiliki relasi term taxonomy yang valid
      * 
      * @return self 
-     * @throws MenuItemException
+     * @throws MenuItemException Jika menu item tidak ditemukan
      */
     public function mustExist(): self
     {
-        $postId = $this->postId;
+        $this->mustPostExist();
 
-        // Cek apakah menu item ada di database
-        $post = get_post($postId);
-        if (!$post) {
-            throw PostException::notFound($postId);
+        if ($this->post->getType() !== PostType::NAV_MENU_ITEM->value) {
+            throw PostException::invalidPostType($this->post->getType(), [PostType::NAV_MENU_ITEM->value]);
         }
 
-        // Cek apakah menu item memiliki relasi term taxonomy yang valid
-        foreach (TermRelationships::findByPostId($postId) as $relation) {
-            $postDto = $relation->getPostDto();
-            if ($postDto->getType() !== PostType::NAV_MENU_ITEM->value) {
-                throw PostException::invalidPostType($postDto->getType(), [PostType::NAV_MENU_ITEM->value]);
-            }
-            $term = $relation->getTermDto();
+        return $this;
+    }
+
+    public function mustSameAsItemType(string $type): self
+    {
+
+        $menuItem = MenuItemEntity::findOne((int)$this->post?->getId(), (int)$this->menu?->getTermId());
+        if ($menuItem && $menuItem->getType() !== $type) {
+            throw MenuItemException::notSameAsType($type, $menuItem->getType());
         }
 
         return $this;
@@ -52,7 +168,7 @@ final class MenuItemValidator
     /**
      * Validasi bahwa parent item ada dan valid
      * 
-     * @throws MenuItemException
+     * @throws MenuItemException Jika parent item tidak ditemukan atau tidak valid
      */
     public function mustHaveValidParent(int $parentId, int $menuId): self
     {
@@ -150,8 +266,8 @@ final class MenuItemValidator
      */
     public function mustBeValidType(string $type): self
     {
-        $allowedTypes = ['post_type', 'taxonomy', 'custom'];
 
+        $allowedTypes = array_column(MenuItemType::cases(), 'value');
         if (!in_array($type, $allowedTypes, true)) {
             throw MenuItemException::invalidType($type, $allowedTypes);
         }
