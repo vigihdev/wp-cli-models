@@ -27,20 +27,18 @@ final class ProcessTimerPreset
         private readonly string $processName = 'Proses'
     ) {
         $this->startTime = microtime(true);
-        // echo "🚀 [{$processName}] Dimulai: " . date('H:i:s') . "\n";
     }
 
     public function start(): void {}
 
     public function checkpoint(string $name): void
     {
+
         $elapsed = microtime(true) - $this->startTime;
         $this->checkpoints[] = [
             'name' => $name,
             'time' => $elapsed
         ];
-
-        // printf("📍 %-25s: %7.3f detik\n", $name, $elapsed);
     }
 
     public function stop(): float

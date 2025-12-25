@@ -6,11 +6,16 @@ namespace Vigihdev\WpCliModels\UI;
 
 use cli\progress\Bar;
 use cli\Table;
-use Vigihdev\WpCliModels\UI\Components\{AskPreset, DryRunPresetExport, BlockPreset, DryRunPreset, InlinePreset, PaginationPreset, SummaryPreset};
+use Vigihdev\WpCliModels\UI\Components\{AskPreset, DryRunPresetExport, BlockPreset, DryRunPreset, InlinePreset, PaginationPreset, ProcessTimerPreset, SummaryPreset};
 use WP_CLI;
 
 final class CliStyle
 {
+
+    public function renderProcessTimerPreset(string $processName): ProcessTimerPreset
+    {
+        return new ProcessTimerPreset($processName);
+    }
 
     public function renderPaginationPreset(string $sectionName, int $showItem, int $total): PaginationPreset
     {

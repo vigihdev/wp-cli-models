@@ -33,10 +33,6 @@ final class ProcessExportPreset
         $io->title('🚀 Memulai Export ' . $this->name);
         $output = Path::isAbsolute($this->output) ? $this->output : Path::join(getcwd() ?? '', $this->output);
 
-        // $io->line(
-        //     sprintf("📁 Export akan disimpan di %s", $io->highlightText($output))
-        // );
-
         $io->line(
             sprintf("%s 📁 Cek directory %s", $io->textInfo('[INFO]'), $io->highlightText($output))
         );
