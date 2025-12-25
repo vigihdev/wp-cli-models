@@ -68,24 +68,6 @@ final class DryRunPresetExport
             $output = Path::isAbsolute($this->output) ? $this->output : Path::join(getcwd() ?? '', $this->output);
             $io->note('Data akan diekspor ke file ' . $io->highlightText($output));
         }
-
-        // Render total items
-        // $io->line(
-        //     sprintf(
-        //         "%s %s %s",
-        //         $io->textWarning("✔ Total items yang akan di export", '%y'),
-        //         $io->highlightText("({$this->total})"),
-        //         $io->textWarning("{$this->name}", '%y'),
-        //     )
-        // );
-
-        // // Render lines
-        // foreach ($this->lines as $line) {
-        //     $io->line($line);
-        // }
-
-        // // 
-        // $io->log('');
     }
 
     public function renderTable(array $items, array $fields): void
