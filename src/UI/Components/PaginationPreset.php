@@ -24,8 +24,10 @@ final class PaginationPreset
             $io->textGreen((string)$this->showItem),
             $io->textGreen((string)$this->total),
         );
+
         $hrWidth = strlen(preg_replace('/\x1b\[[0-9;]*[a-zA-Z]/', '', $message)) + 10;
         $io->newLine();
+
         $io->hr('-', $hrWidth);
         $io->line($message);
         $io->hr('-', $hrWidth);

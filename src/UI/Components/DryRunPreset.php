@@ -121,6 +121,27 @@ final class DryRunPreset
         return $this;
     }
 
+    /**
+     * Add table with compact format 
+     *
+     * @param array $items List of items (indexed array)
+     * @param array $fields List of fields array (key => label)
+     * @return self
+     */
+    public function addTableCompact(array $items, array $fields): self
+    {
+        if (empty($items) || empty($fields) || ! $this->isIndexedArray($items) || ! $this->isIndexedArray($fields)) {
+            return $this;
+        }
+
+        $this->itemsTable = [
+            'headers' => $fields,
+            'rows' => $items,
+        ];
+
+        return $this;
+    }
+
     public function addTable(array $items): self
     {
         $headers = array_keys($items[0] ?? []);
@@ -144,6 +165,28 @@ final class DryRunPreset
         return $this;
     }
 
+    /**
+     * Add table with single row
+     *
+     * @param array<string> $items List of items
+     * @return self
+     */
+    public function addTableSingle(array $items): self
+    {
+        $rows = [];
+        foreach ($items as $key => $value) {
+            $value = is_array($value) ? implode(', ', $value) : $value;
+            $rows[] = [$key, (string) $value];
+        }
+
+        $this->itemsTable = [
+            'headers' => ['Key', 'Value'],
+            'rows' => $rows,
+        ];
+
+        return $this;
+    }
+
     private function renderTitle(): void
     {
         $io = $this->io;
@@ -159,5 +202,15 @@ final class DryRunPreset
         $io->successWithIcon('Dry run selesai!');
         $io->block('Gunakan tanpa --dry-run untuk eksekusi sebenarnya.', 'note');
         $io->hr('-', 75);
+    }
+
+    private function isAssociativeArray(array $array): bool
+    {
+        return array_keys($array) !== range(0, count($array) - 1);
+    }
+
+    private function isIndexedArray(array $array): bool
+    {
+        return !$this->isAssociativeArray($array);
     }
 }

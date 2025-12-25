@@ -32,6 +32,7 @@ final class SummaryPreset
         if ($withHr) {
             $io->hr();
         }
+
         $io->line($io->textGreen($title));
         foreach ($this->renderItems() as $label => $value) {
             $padding = str_repeat(' ', 4);

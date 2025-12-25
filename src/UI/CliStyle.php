@@ -112,30 +112,45 @@ final class CliStyle
 
     public function logFatal(...$messages): void
     {
-        WP_CLI::line(
-            sprintf("%s ❌ %s", WP_CLI::colorize("%R[FATAL]%n"), implode(' ', $messages))
-        );
+        foreach ($messages as $message) {
+            WP_CLI::line(
+                sprintf("%s ❌ %s", WP_CLI::colorize("%R[FATAL]%n"), $this->textRed($message, '%R'))
+            );
+        }
     }
-
+    public function logSucess(...$messages): void
+    {
+        foreach ($messages as $message) {
+            WP_CLI::line(
+                sprintf("%s ✅ %s", WP_CLI::colorize("%G[SUCCESS]%n"), $this->textGreen($message, '%g'))
+            );
+        }
+    }
     public function logInfo(...$messages): void
     {
-        WP_CLI::line(
-            sprintf("%s ℹ️   %s", WP_CLI::colorize("%B[INFO]%n"), implode(' ', $messages))
-        );
+        foreach ($messages as $message) {
+            WP_CLI::line(
+                sprintf("%s ℹ️  %s", WP_CLI::colorize("%B[INFO]%n"), $this->textGreen($message, '%g'))
+            );
+        }
     }
 
     public function logWarning(...$messages): void
     {
-        WP_CLI::line(
-            sprintf("%s ⚠️  %s", WP_CLI::colorize("%Y[WARNING]%n"), implode(' ', $messages))
-        );
+        foreach ($messages as $message) {
+            WP_CLI::line(
+                sprintf("%s ⚠️  %s", WP_CLI::colorize("%Y[WARNING]%n"), $this->textGreen($message, '%g'))
+            );
+        }
     }
 
     public function logError(...$messages): void
     {
-        WP_CLI::line(
-            sprintf("%s ❌ %s", WP_CLI::colorize("%M[ERROR]%n"), implode(' ', $messages))
-        );
+        foreach ($messages as $message) {
+            WP_CLI::line(
+                sprintf("%s ❌ %s", WP_CLI::colorize("%M[ERROR]%n"), $this->textRed($message, '%R'))
+            );
+        }
     }
 
     public function textGreen(string $message, string $color = '%G'): string

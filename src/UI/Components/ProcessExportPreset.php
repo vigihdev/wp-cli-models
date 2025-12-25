@@ -40,6 +40,7 @@ final class ProcessExportPreset
         $io->line(
             sprintf("%s 📁 Cek directory %s", $io->textInfo('[INFO]'), $io->highlightText($output))
         );
+
         $this->successAsk = $this->ask->directory($this->output);
         sleep(1);
         if ($this->successAsk) {
