@@ -29,9 +29,9 @@ final class ProcessTimerPreset
         $this->startTime = microtime(true);
     }
 
-    public function start(): void {}
+    private function start(): void {}
 
-    public function checkpoint(string $name): void
+    private function checkpoint(string $name): void
     {
 
         $elapsed = microtime(true) - $this->startTime;
@@ -41,7 +41,7 @@ final class ProcessTimerPreset
         ];
     }
 
-    public function stop(): float
+    private function stop(): float
     {
         $this->endTime = microtime(true);
         $duration = $this->getDuration();
@@ -56,12 +56,12 @@ final class ProcessTimerPreset
         $duration = $this->getDuration();
     }
 
-    public function getDuration(): float
+    private function getDuration(): float
     {
         return microtime(true) - $this->startTime;
     }
 
-    public static function quickMeasure(callable $callback, string $name = 'Proses'): mixed
+    private static function quickMeasure(callable $callback, string $name = 'Proses'): mixed
     {
         $timer = new self($name);
         $result = $callback();
