@@ -143,9 +143,10 @@ final class BlockPreset
     {
         $length = $this->width - strlen($message);
         if ($length > 0) {
-            $this->message = sprintf('%s%s', $message, str_repeat(' ', $length));
+            $this->message = sprintf('%s%s', $message, str_repeat(' ', $length + 4));
             return $this->width;
         }
+
         $this->message = sprintf('%s%s', $message, str_repeat(' ', 4));
         return strlen($message) + 4;
     }
