@@ -36,6 +36,7 @@ final class WpCliStyle
         $this->lineLength = min(80 - (int) (\DIRECTORY_SEPARATOR === '\\'), self::MAX_LINE_LENGTH);
     }
 
+
     /**
      * Displays a block of messages with an icon.
      *
