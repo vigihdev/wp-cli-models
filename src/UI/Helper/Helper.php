@@ -9,6 +9,12 @@ use Symfony\Component\String\UnicodeString;
 abstract class Helper
 {
 
+    /**
+     * Get the width of a string.
+     * 
+     * @param string|null $string
+     * @return int
+     */
     public static function width(?string $string): int
     {
         $string ??= '';
@@ -26,6 +32,12 @@ abstract class Helper
         return mb_strwidth($string, $encoding);
     }
 
+    /**
+     * Get the length of a string.
+     * 
+     * @param string|null $string
+     * @return int
+     */
     public static function length(?string $string): int
     {
         $string ??= '';
@@ -41,6 +53,14 @@ abstract class Helper
         return mb_strlen($string, $encoding);
     }
 
+    /**
+     * Get a substring of a string. 
+     * 
+     * @param string|null $string The string to get the substring from.
+     * @param int $from The position to start from.
+     * @param int|null $length The length of the substring.
+     * @return string The substring.
+     */
     public static function substr(?string $string, int $from, ?int $length = null): string
     {
         $string ??= '';
@@ -56,6 +76,13 @@ abstract class Helper
         return mb_substr($string, $from, $length, $encoding);
     }
 
+    /**
+     * Format a time in milliseconds to a human readable string.
+     * 
+     * @param int|float $secs The time in milliseconds.
+     * @param int $precision The precision of the time.
+     * @return string The formatted time.
+     */
     public static function formatTime(int|float $secs, int $precision = 1): string
     {
         $ms = (int) ($secs * 1000);
@@ -98,6 +125,12 @@ abstract class Helper
         return implode(', ', array_reverse($times));
     }
 
+    /**
+     * Format a memory in bytes to a human readable string.
+     * 
+     * @param int $memory The memory in bytes.
+     * @return string The formatted memory.
+     */
     public static function formatMemory(int $memory): string
     {
         if ($memory >= 1024 * 1024 * 1024) {

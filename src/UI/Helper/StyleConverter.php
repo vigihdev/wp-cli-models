@@ -7,7 +7,12 @@ namespace Vigihdev\WpCliModels\UI\Helper;
 
 final class StyleConverter
 {
-
+    /**
+     * Converts special tags in the text to their corresponding color codes.
+     *
+     * @param string $text The text containing special tags.
+     * @return string The text with special tags converted to color codes.
+     */
     public static function convertTags(string $text): string
     {
         // Tangani tag khusus yang pakai icon (Success & Warning)

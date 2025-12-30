@@ -8,28 +8,42 @@ use cli\Table;
 use Vigihdev\WpCliModels\UI\Helper\Helper;
 use Vigihdev\WpCliModels\UI\Helper\OutputWrapper;
 use Vigihdev\WpCliModels\UI\Helper\StyleConverter;
+use Vigihdev\WpCliModels\UI\Helper\SpinnerLoader;
 use WP_CLI;
 
 final class WpCliStyle
 {
+
     public const MAX_LINE_LENGTH = 120;
 
+    /**
+     * The length of the line to use for text wrapping.
+     */
     private int $lineLength;
+
+    /**
+     * The helper class for outputting messages.
+     */
+    private OutputWrapper $outputWrapper;
+
+    /**
+     * The helper class for loading spinners.
+     */
+    private SpinnerLoader $spinnerLoader;
 
     public function __construct()
     {
-        $this->lineLength = min($this->detectTerminalWidth(), self::MAX_LINE_LENGTH);
-        // $this->lineLength = min(80 - (int) (\DIRECTORY_SEPARATOR === '\\'), self::MAX_LINE_LENGTH);
+        $this->lineLength = min(80 - (int) (\DIRECTORY_SEPARATOR === '\\'), self::MAX_LINE_LENGTH);
     }
 
-    private function detectTerminalWidth(): int
-    {
-        if (function_exists('shell_exec') && preg_match('#\d+ (\d+)#', shell_exec('stty size') ?: '', $m)) {
-            return (int) $m[1];
-        }
-        return PHP_OS_FAMILY === 'Windows' ? 80 : 120;
-    }
-
+    /**
+     * Displays a block of messages with an icon.
+     *
+     * @param string|array $message The message(s) to display.
+     * @param string $style The style to apply to the block.
+     * @param string $icon The icon to display before the message.
+     * @return void
+     */
     private function blockWithIcon(string|array $message, string $style, string $icon): void
     {
         $messages = is_array($message) ? $message : [$message];
@@ -43,13 +57,27 @@ final class WpCliStyle
             $this->text("  {$line}");
         }
     }
-
+    /**
+     * Displays a title with a horizontal line under it.
+     *
+     * @param string $message The title message to display.
+     * @param string $color The color to apply to the title.
+     * @return void
+     */
     public function title(string $message, string $color = 'fg=green;options=bold'): void
     {
         $this->text("<{$color}>{$message}</>");
         $this->hr('=', strlen($message));
         $this->newLine();
     }
+
+    /**
+     * Displays a section title with a horizontal line under it.
+     *
+     * @param string $message The section title message to display.
+     * @param string $color The color to apply to the section title.
+     * @return void
+     */
     public function section(string $message, string $color = 'fg=yellow;options=bold'): void
     {
 
@@ -58,36 +86,77 @@ final class WpCliStyle
         $this->newLine();
     }
 
+    /**
+     * Displays a note message with a note icon.
+     *
+     * @param string|array $message The note message(s) to display.
+     * @return void
+     */
     public function note(string|array $message): void
     {
         $this->blockWithIcon($message, 'fg=yellow', '📝');
     }
 
+    /**
+     * Displays an error message with an error icon.
+     *
+     * @param string|array $message The error message(s) to display.
+     * @return void
+     */
     public function error(string|array $message): void
     {
         $this->blockWithIcon($message, 'fg=red', '❌');
     }
 
+    /**
+     * Displays a caution message with a caution icon.
+     *
+     * @param string|array $message The caution message(s) to display.
+     * @return void
+     */
     public function caution(string|array $message): void
     {
         $this->blockWithIcon($message, 'fg=red', '🔥');
     }
 
+    /**
+     * Displays an info message with an info icon.
+     *
+     * @param string|array $message The info message(s) to display.
+     * @return void
+     */
     public function info(string|array $message): void
     {
         $this->blockWithIcon($message, 'fg=cyan', 'ℹ️');
     }
 
+    /**
+     * Displays a warning message with a warning icon.
+     *
+     * @param string|array $message The warning message(s) to display.
+     * @return void
+     */
     public function warning(string|array $message): void
     {
         $this->blockWithIcon($message, 'fg=yellow', '⚠️');
     }
 
+    /**
+     * Displays a success message with a success icon.
+     *
+     * @param string|array $message The success message(s) to display.
+     * @return void
+     */
     public function success(string|array $message): void
     {
         $this->blockWithIcon($message, 'fg=green', '✅');
     }
-
+    /**
+     * Displays an error message block with an error icon.
+     *
+     * @param string|array $message The error message(s) to display.
+     * @return void
+     */
     public function errorBlock(string|array $message): void
     {
         $messages = is_array($message) ? $message : [$message];
@@ -96,6 +165,12 @@ final class WpCliStyle
             $this->text($line);
         }
     }
+    /**
+     * Displays an info message block with an info icon.
+     *
+     * @param string|array $message The info message(s) to display.
+     * @return void
+     */
     public function infoBlock(string|array $message): void
     {
         $messages = is_array($message) ? $message : [$message];
@@ -104,7 +179,12 @@ final class WpCliStyle
             $this->text($line);
         }
     }
-
+    /**
+     * Displays a success message block with a success icon.
+     *
+     * @param string|array $message The success message(s) to display.
+     * @return void
+     */
     public function successBlock(string|array $message): void
     {
         $messages = is_array($message) ? $message : [$message];
@@ -113,7 +193,12 @@ final class WpCliStyle
             $this->text($line);
         }
     }
-
+    /**
+     * Displays a warning message block with a warning icon.
+     *
+     * @param string|array $message The warning message(s) to display.
+     * @return void
+     */
     public function warningBlock(string|array $message): void
     {
         $messages = is_array($message) ? $message : [$message];
@@ -122,7 +207,12 @@ final class WpCliStyle
             $this->text($line);
         }
     }
-
+    /**
+     * Displays a note message block with a note icon.
+     *
+     * @param string|array $message The note message(s) to display.
+     * @return void
+     */
     public function noteBlock(string|array $message): void
     {
         $messages = is_array($message) ? $message : [$message];
@@ -131,7 +221,12 @@ final class WpCliStyle
             $this->text($line);
         }
     }
-
+    /**
+     * Displays a caution message block with a caution icon.
+     *
+     * @param string|array $message The caution message(s) to display.
+     * @return void
+     */
     public function cautionBlock(string|array $message): void
     {
         $messages = is_array($message) ? $message : [$message];
@@ -141,6 +236,14 @@ final class WpCliStyle
         }
     }
 
+    /**
+     * Displays a listing of items with a bullet point.
+     *
+     * @param array $items The items to display.
+     * @param string $bullet The bullet point to use (default: '●').
+     * @param int $indent The indentation level (default: 4).
+     * @return void
+     */
     public function listing(array $items, string $bullet = '●', int $indent = 4): void
     {
         $padding = str_repeat(' ', $indent);
@@ -149,6 +252,12 @@ final class WpCliStyle
         }
     }
 
+    /**
+     * Displays a plain text message.
+     *
+     * @param string|array $message The message(s) to display.
+     * @return void
+     */
     public function text(string|array $message): void
     {
         if (is_array($message)) {
@@ -189,6 +298,7 @@ final class WpCliStyle
 
     public function definitionList(...$items): void
     {
+
         foreach ($items as $item) {
             // 1. Jika itu Judul (String)
             if (is_string($item)) {
@@ -215,6 +325,17 @@ final class WpCliStyle
     }
 
     private function choice(string $question, array $choices, mixed $default = null, bool $multiSelect = false) {}
+    public function spinnerStart(string $message): void
+    {
+        $spinner = new SpinnerLoader();
+        $spinner->start($message);
+        $this->spinnerLoader = $spinner;
+    }
+
+    public function spinnerStop(string $finalMessage): void
+    {
+        $this->spinnerLoader->stop($finalMessage);
+    }
 
     private function progressStart(int $max = 0): void {}
 
@@ -233,14 +354,14 @@ final class WpCliStyle
         $this->write($messages, true);
     }
 
-    public function write(string|iterable $messages, bool $newline = false): void
+    public function write(string|iterable $messages, bool $newline = false, string $space = " "): void
     {
         if (!is_iterable($messages)) {
             $messages = [$messages];
         }
 
         if (!$newline) {
-            $message = implode(" ", $messages);
+            $message = implode($space, $messages);
             $this->text($message);
             return;
         }
@@ -252,7 +373,9 @@ final class WpCliStyle
 
     public function newLine(int $count = 1): void
     {
-        WP_CLI::line(str_repeat(PHP_EOL, $count));
+        for ($i = 0; $i < $count; $i++) {
+            WP_CLI::line("");
+        }
     }
     public function hr(string $border = '-', int $width = 50): void
     {
