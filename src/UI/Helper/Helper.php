@@ -147,4 +147,22 @@ abstract class Helper
 
         return \sprintf('%d B', $memory);
     }
+
+    public static function textJustifyKey(array $assoc_args): array
+    {
+
+        $lengths = array_map(function ($value) {
+            $lengthValue = strlen((string)$value);
+            return $lengthValue;
+        }, array_keys($assoc_args));
+
+        $length = max($lengths);
+        $items = [];
+        foreach ($assoc_args as $key => $value) {
+            $padding = str_repeat(' ', $length - strlen($key));
+            $items[$key] = "{$padding}{$value}";
+        }
+
+        return $items;
+    }
 }

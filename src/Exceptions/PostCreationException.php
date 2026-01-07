@@ -141,7 +141,7 @@ final class PostCreationException extends WpCliModelException
 
     public static function duplicatePostTitle(string $title, string $type = 'post', ?string $error = null): self
     {
-        $message = "Failed to create {$type} post '{$title}'";
+        $message = "Post title '{$title}' type '{$type}' already exists";
         if ($error) {
             $message .= ": {$error}";
         }

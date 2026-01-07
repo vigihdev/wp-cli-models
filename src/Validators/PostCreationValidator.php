@@ -38,11 +38,14 @@ final class PostCreationValidator
         return $this;
     }
 
-    public function mustHaveUniqueTitle(string $title): self
+    public function mustHaveUniqueTitle(string $title, array $excepts = []): self
     {
 
         if (PostEntity::existsByTitle($title)) {
             $post = PostEntity::findByTitle($title);
+            if (in_array($post->post_type, $excepts)) {
+                return $this;
+            }
             throw PostCreationException::duplicatePostTitle($title, $post->post_type);
         }
         return $this;
@@ -116,7 +119,7 @@ final class PostCreationValidator
             }
 
             if ($post_title && $post_type) {
-                $this->mustHaveUniqueTitle($post_title, $post_type);
+                $this->mustHaveUniqueTitle($post_title);
             }
 
             if ($post_status) {

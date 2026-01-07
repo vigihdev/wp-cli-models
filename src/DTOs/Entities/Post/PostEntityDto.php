@@ -216,7 +216,7 @@ final class PostEntityDto extends BaseEntityDto implements PostEntityInterface
 
         return new self(
             id: (int) $data['ID'],
-            author: $data['post_author'] ?? '',
+            author: (string)$data['post_author'] ?? '',
             date: $data['post_date'] ?? '',
             dateGmt: $data['post_date_gmt'] ?? '',
             content: $data['post_content'] ?? '',

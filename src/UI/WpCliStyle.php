@@ -309,6 +309,7 @@ final class WpCliStyle
 
             // 3. Jika itu Data (Array)
             elseif (is_array($item)) {
+                $item = Helper::textJustifyKey($item);
                 foreach ($item as $key => $value) {
                     $this->text("   <fg=cyan>{$key}</>:  <fg=yellow>{$value}</>");
                 }

@@ -109,7 +109,6 @@ final class PostEntity
         ";
 
         $params = array_merge([$postTitle], $postStatus);
-
         $postId = $wpdb->get_var($wpdb->prepare($sql, ...$params));
 
         return $postId ? get_post($postId, $output, $filter) : null;
