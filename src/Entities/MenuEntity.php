@@ -6,6 +6,7 @@ namespace Vigihdev\WpCliModels\Entities;
 
 use Vigihdev\Support\Collection;
 use Vigihdev\WpCliModels\DTOs\Entities\Menu\MenuEntityDto;
+use WP;
 use WP_Error;
 use WP_Term;
 
@@ -54,14 +55,41 @@ final class MenuEntity
      * Membuat menu baru
      *
      * @param string $name Nama menu yang akan dibuat
-     * @return int|false ID menu yang dibuat, false jika gagal
+     * @param array $menuData Data tambahan untuk menu (opsional)
+     * @return int|WP_Error ID menu yang dibuat, WP_Error jika terjadi kesalahan
      */
-    public static function create(string $name): int|false
+    public static function create(string $name, array $menuData = []): int|WP_Error
     {
         if (self::exists($name)) {
-            return false;
+            return new WP_Error(409, __('Menu already exists.'));
+        }
+
+        if (!empty($menuData)) {
+            $menu = wp_create_nav_menu($name);
+            if (!is_wp_error($menu)) {
+
+                if (isset($menuData['location'])) {
+                    $location = $menuData['location'];
+                    unset($menuData['location']);
+                    self::assignLocation($menu, $location);
+                }
+
+                return wp_update_nav_menu_object($menu, $menuData);
+            }
+
+            return $menu;
         }
         return wp_create_nav_menu($name);
+    }
+
+    private static function assignLocation(int $menu_id, string $location_slug): bool
+    {
+        $slug = sanitize_title($location_slug);
+        $location_slug = str_replace('-', '_', $slug);
+        $locations = get_theme_mod('nav_menu_locations', []);
+
+        $locations[$location_slug] = $menu_id;
+        return set_theme_mod('nav_menu_locations', $locations);
     }
 
     /**

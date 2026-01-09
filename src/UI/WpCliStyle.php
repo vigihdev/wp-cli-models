@@ -419,7 +419,7 @@ final class WpCliStyle
         }
 
         // wrap and add newlines for each element
-        $outputWrapper = new OutputWrapper();
+        $outputWrapper = new OutputWrapper(allowCutUrls: true);
         foreach ($messages as $key => $message) {
 
             $lines = array_merge(
@@ -453,7 +453,7 @@ final class WpCliStyle
             $line .= str_repeat(' ', max($this->lineLength - Helper::width($line), 0));
 
             if ($style) {
-                $line = \sprintf('<%s>%s</>', $style, $line);
+                $line = \sprintf('<%s>%s </>', $style, $line);
             }
         }
 

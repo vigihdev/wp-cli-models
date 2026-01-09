@@ -150,15 +150,15 @@ final class CustomItemMenuArgsDto extends BaseArgsDto implements CustomItemMenuA
     public static function fromArray(array $data): static
     {
         // Validasi required fields
-        if (empty($data['menu'])) {
+        if (!isset($data['menu'])) {
             throw new \InvalidArgumentException('Menu identifier is required');
         }
 
-        if (empty($data['title'])) {
+        if (!isset($data['title'])) {
             throw new \InvalidArgumentException('Title is required');
         }
 
-        if (empty($data['link'])) {
+        if (!isset($data['link'])) {
             throw new \InvalidArgumentException('Link URL is required');
         }
 
@@ -172,9 +172,9 @@ final class CustomItemMenuArgsDto extends BaseArgsDto implements CustomItemMenuA
         }
 
         return new static(
-            menu: $data['menu'],
-            title: $data['title'],
-            link: $data['link'],
+            menu: (string) $data['menu'],
+            title: (string) $data['title'],
+            link: (string) $data['link'],
             description: $data['description'] ?? null,
             attrTitle: $data['attr_title'] ?? null,
             target: $data['target'] ?? null,

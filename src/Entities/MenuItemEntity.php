@@ -12,65 +12,85 @@ use WP_Error;
 final class MenuItemEntity
 {
 
-    public static function findOne(int $postId, int|string $menuId): ?MenuItemEntityDto
+    /**
+     * Mengecek apakah label sudah ada di dalam menu tertentu.
+     * 
+     * @param int|string|\WP_Term $menu ID, Slug, atau Object Menu.
+     * @param string $label Label yang ingin dicek.
+     * @return bool Jika label sudah ada di dalam menu, maka akan mengembalikan true.
+     */
+    public static function existsByLabel(int|string|\WP_Term $menu, string $label): bool
     {
-
-        $menu = self::get($menuId)
-            ->filter(fn($dto) => $dto->getId() === $postId)
-            ->first();
-
-        return $menu;
+        $collection = self::findByMenuLabel($menu, $label);
+        return $collection->count() > 0;
     }
+
+    /**
+     * Mengecek apakah URL sudah ada di dalam menu tertentu.
+     * 
+     * @param int|string|\WP_Term $menu ID, Slug, atau Object Menu.
+     * @param string $url URL yang ingin dicek.
+     * @return bool Jika URL sudah ada di dalam menu, maka akan mengembalikan true.
+     */
+    public static function existsByUrl(int|string|\WP_Term $menu, string $url): bool
+    {
+        $collection = self::findByMenuUrl($menu, $url);
+        return $collection->count() > 0;
+    }
+
+    /**
+     * Mencari item menu berdasarkan label.
+     * 
+     * @param int|string|\WP_Term $menu ID, Slug, atau Object Menu.
+     * @param string $label Label yang ingin dicari.
+     * @return Collection<MenuItemEntityDto> Koleksi item menu yang memiliki label yang sesuai.
+     */
+    public static function findByMenuLabel(int|string|\WP_Term $menu, string $label): Collection
+    {
+        return self::get($menu)
+            ->filter(fn($item) => strtolower($item->getTitle()) === strtolower($label));
+    }
+
+    /**
+     * Mencari item menu berdasarkan URL.
+     * 
+     * @param int|string|\WP_Term $menu ID, Slug, atau Object Menu.
+     * @param string $url URL yang ingin dicari.
+     * @return Collection<MenuItemEntityDto> Koleksi item menu yang memiliki URL yang sesuai.
+     */
+    public static function findByMenuUrl(int|string|\WP_Term $menu, string $url): Collection
+    {
+        $targetUrl = self::normalizeUrl($url);
+
+        return self::get($menu)->filter(function ($item) use ($targetUrl) {
+            $currentUrl = self::normalizeUrl($item->getUrl());
+
+            return $currentUrl === $targetUrl;
+        });
+    }
+
 
     /**
      * Mengambil item menu berdasarkan menu dan mengembalikan dalam bentuk collection
      *
-     * @param int|string $menu ID, nama slug atau objek menu yang akan dicari
+     * @param int|string|\WP_Term $menu ID, Slug, atau Object Menu.
      * @param array $args Argumen tambahan untuk mengambil menu item
      * @return Collection<MenuItemEntityDto> Koleksi item menu dalam bentuk DTO
      */
-    public static function get(int|string $menu, array $args = []): Collection
+    public static function get(int|string|\WP_Term $menu, array $args = []): Collection
     {
-        $array_menu = wp_get_nav_menu_items($menu, $args);
+        $items = wp_get_nav_menu_items($menu, $args);
 
-        if (empty($array_menu)) {
-            return new Collection(data: []);
+        if (empty($items) || is_wp_error($items)) {
+            return new Collection([]);
         }
 
-        $data = array_map('wp_setup_nav_menu_item', $array_menu);
-        $data = array_map(fn($v) => MenuItemEntityDto::fromQuery($v), $data);
-        return new Collection(data: $data);
-    }
+        $mappedData = array_map(function ($postObject) {
+            $menuItem = wp_setup_nav_menu_item($postObject);
+            return MenuItemEntityDto::fromQuery($menuItem);
+        }, $items);
 
-    /**
-     * Mencari item menu berdasarkan tipe dan judul
-     *
-     * @param int|string $menu ID, nama slug atau objek menu yang akan dicari
-     * @param string $type Tipe menu item yang akan dicari
-     * @param string $title Judul menu item yang akan dicari
-     * @return MenuItemEntityDto|null Instance MenuItemEntityDto jika ditemukan, null jika tidak
-     */
-    public static function getTypeTitle(int|string $menu, string $type, string $title): ?MenuItemEntityDto
-    {
-        $items = self::get($menu)
-            ->filter(fn($dto) => strtolower($dto->getTitle()) === strtolower($title) && $dto->getType() === $type);
-        return $items->count() > 0 ? $items->first() : null;
-    }
-
-
-    /**
-     * Memeriksa apakah menu item dengan tipe dan judul tertentu ada
-     *
-     * @param int|string $menu ID, nama slug atau objek menu yang akan dicari
-     * @param string $type Tipe menu item yang akan diperiksa
-     * @param string $title Judul menu item yang akan diperiksa
-     * @return bool True jika menu item ditemukan, false jika tidak
-     */
-    public static function existByTitle(int|string $menu, string $type, string $title): bool
-    {
-        $items = self::get($menu)
-            ->filter(fn(MenuItemEntityDto $dto) => strtolower($dto->getTitle()) === strtolower($title) && $dto->getType() === $type);
-        return (bool) current($items);
+        return new Collection($mappedData);
     }
 
     /**
@@ -94,23 +114,6 @@ final class MenuItemEntity
         return wp_update_nav_menu_item($menuId, 0, $menu_item_data);
     }
 
-    private static function update(int $id, array $menu_item_data) {}
-
-    /**
-     * Memeriksa apakah menu item dengan tipe dan judul tertentu ada
-     *
-     * @param int|string $menu ID, nama slug atau objek menu yang akan dicari
-     * @param string $type Tipe menu item yang akan diperiksa
-     * @param string $title Judul menu item yang akan diperiksa
-     * @return bool True jika menu item ditemukan, false jika tidak
-     */
-    public static function exists(int|string $menu, string $type, string $title): bool
-    {
-        $items = self::get($menu)
-            ->filter(fn($dto) => strtolower($dto->getTitle()) === strtolower($title) && $dto->getType() === $type);
-        return (bool) current($items);
-    }
-
     /**
      * Menghapus menu item berdasarkan ID
      *
@@ -131,5 +134,22 @@ final class MenuItemEntity
         }
 
         return (bool) wp_delete_post($postId, true);
+    }
+
+    /**
+     * Normalisasi URL untuk memastikan format URL yang konsisten
+     *
+     * @param string $url URL yang akan dinormalisasi
+     * @return string URL yang sudah dinormalisasi
+     */
+    private static function normalizeUrl(string $url): string
+    {
+        $parts = parse_url($url);
+
+        $host = isset($parts['host']) ? $parts['host'] : '';
+        $path = isset($parts['path']) ? $parts['path'] : '';
+
+        $cleanUrl = $host . $path;
+        return untrailingslashit($cleanUrl);
     }
 }
