@@ -193,6 +193,9 @@ final class CustomItemMenuArgsDto extends BaseArgsDto implements CustomItemMenuA
     public function toArray(): array
     {
         $args = [
+            'menu'        => $this->menu,
+            'title'       => $this->title,
+            'link'        => $this->link,
             'description' => $this->description,
             'attr-title'  => $this->attrTitle,
             'target'      => $this->target,
@@ -202,7 +205,6 @@ final class CustomItemMenuArgsDto extends BaseArgsDto implements CustomItemMenuA
             'porcelain'   => $this->porcelain,
         ];
 
-        // Hapus nilai null agar tidak mempengaruhi command
         $args = array_filter($args, function ($value) {
             return $value !== null;
         });
