@@ -5,9 +5,8 @@ declare(strict_types=1);
 namespace Vigihdev\WpCliModels\Fields;
 
 use Vigihdev\WpCliModels\Contracts\Fields\FieldInterface;
-use Vigihdev\WpCliModels\Fields\BaseField;
 
-final class PostField extends BaseField implements FieldInterface
+final class PostField implements FieldInterface
 {
 
     public function __construct(
@@ -50,6 +49,17 @@ final class PostField extends BaseField implements FieldInterface
             }
         }
         return $attributes;
+    }
+
+    public function dtoTransform(array $data): array
+    {
+        $transformed = [];
+        foreach ($this->dtoDataFields() as $key => $value) {
+            if (isset($data[$key])) {
+                $transformed[$value] = $data[$key];
+            }
+        }
+        return $transformed;
     }
 
     /**
@@ -121,5 +131,39 @@ final class PostField extends BaseField implements FieldInterface
             'featured_image' => '_thumbnail_id',
         ];
         return $attribute;
+    }
+
+    private function dtoDataFields(): array
+    {
+
+        $attributes = [
+            'post_title'            => 'title',
+            'post_name'             => 'name',
+            'post_status'           => 'status',
+            'post_author'           => 'author',
+            'post_type'             => 'type',
+            'post_date'             => 'date',
+            'post_date_gmt'         => 'dateGmt',
+            'post_modified'         => 'modified',
+            'post_modified_gmt'     => 'modifiedGmt',
+            'post_content'          => 'content',
+            'post_content_filtered' => 'contentFiltered',
+            'post_excerpt'          => 'excerpt',
+            'comment_status'        => 'commentStatus',
+            'ping_status'           => 'pingStatus',
+            'post_password'         => 'password',
+            'to_ping'               => 'toPing',
+            'pinged'                => 'pinged',
+            'post_parent'           => 'parent',
+            'menu_order'            => 'menuOrder',
+            'post_mime_type'        => 'mimeType',
+            'guid'                  => 'guid',
+            'post_category'         => 'category',
+            'tags_input'            => 'tagsInput',
+            'tax_input'             => 'taxInput',
+            'meta_input'            => 'metaInput',
+        ];
+
+        return $attributes;
     }
 }

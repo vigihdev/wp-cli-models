@@ -2,23 +2,19 @@
 
 .DS_Store
 .amazonq
-.cursor
 .git
 .vscode
 .marscode
-.trae
 .lingma
-.grok
 .phpunit.cache
 GEMINI.md
 composer.lock
 vendor
-source/wp
-dev.php
+source/*
+!source/data/
+local-dev
 scripts
-dev.js
 coverage
-data
 nodemon.json
 node_modules
 package.json
