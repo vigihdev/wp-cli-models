@@ -6,17 +6,14 @@ namespace Vigihdev\WpCliModels\Fields;
 
 use Vigihdev\WpCliModels\Contracts\Fields\FieldInterface;
 
-final class PostField implements FieldInterface
+final class PostField
 {
 
-    public function __construct(
-        private string $fields,
-    ) {}
 
-    public function transform(array $data): array
+    private function transform(array $data): array
     {
         $transformed = [];
-        foreach ($this->getFieldAttributes() as $key => $value) {
+        foreach ($this->dataFields() as $key => $value) {
             if (isset($data[$value])) {
                 $transformed[$key] = $data[$value];
             }
@@ -29,9 +26,9 @@ final class PostField implements FieldInterface
      *
      * @return array<string>
      */
-    public function getAttributes(): array
+    private function getAttributes(): array
     {
-        $fields = preg_replace('/[\s]+/', '', $this->fields);
+        $fields = preg_replace('/[\s]+/', '', '');
         return explode(',', $fields);
     }
 
@@ -40,7 +37,7 @@ final class PostField implements FieldInterface
      *
      * @return array<string, string>
      */
-    public function getFieldAttributes(): array
+    private function getFieldAttributes(): array
     {
         $attributes = [];
         foreach ($this->getAttributes() as $field) {

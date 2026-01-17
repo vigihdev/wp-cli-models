@@ -341,7 +341,7 @@ final class CreatePostArgsDto extends BaseArgsDto implements CreatePostArgsInter
         return new static(
             title: $data['title'],
             content: $data['content'],
-            author: $data['author'] ?? null,
+            author: (int)$data['author'] ?? null,
             date: $data['date'] ?? null,
             dateGmt: $data['dateGmt'] ?? null,
             contentFiltered: $data['contentFiltered'] ?? null,
